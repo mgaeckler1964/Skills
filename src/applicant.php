@@ -61,6 +61,8 @@
 			$planed_time = $applicant['planed_time'];
 			$mobility = $applicant['mobility'];
 			$open = $applicant['open'];
+			$delCV = checkBoolField( $applicant, $applCvInfo['uiDeleteName'] );
+			$delMOT = checkBoolField( $applicant, $applMotInfo['uiDeleteName'] );
 			$description = $applicant['description'];
 
 			$_SESSION['backURL'] = "applicant.php";
@@ -110,7 +112,6 @@
 							echo("<i>Tragen Sie hier ein, f&uuml;r wie viele Monate Sie eine Stelle suchen. </i>");
 						else
 							echo(" Monate");
-							
 					?>
 				</td></tr>
 				
@@ -126,8 +127,14 @@
 					<td class="fieldLabel">Kurzbeschreibung</td>
 					<td><?php createMemo("description", $description, $readOnly, true, 1024, 80, 8 );?></td>
 				</tr>
-				<tr><td class="fieldLabel">Lebenslauf</td><td><input type="file" name="cvFile"></td></tr>
-				<tr><td class="fieldLabel">Allgemeine Motivation</td><td><input type="file" name="motivationFile"></td></tr>
+				<tr>
+					<td class="fieldLabel">Lebenslauf</td>
+					<td><?php writeFileInput($applicant, $applCvInfo, $delCV, $readOnly ); ?></td>
+				</tr>
+				<tr>
+					<td class="fieldLabel">Allgemeine Motivation</td>
+					<td><?php writeFileInput($applicant, $applMotInfo, $delMOT, $readOnly ); ?></td>
+				</tr>
 				<tr>
 					<td class="fieldLabel">Skills</td>
 					<td><?php

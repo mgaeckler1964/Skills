@@ -50,11 +50,28 @@
 	define( "APPLICATION_COPYRIGHT", "&copy; 2026 by <a href='https://www.gaeckler.at/' target='_blank'>Martin G&auml;ckler</a>" );
 	define( "NO_PERM", "Keine Berechtigung" );
 
+	if( is_dir( __DIR__ . "/../../../SkillsStorage" ) )
+		define( "STORAGE_PATH", __DIR__ . "/../../../SkillsStorage/" );
+	else if( is_dir( __DIR__ . "/../../SkillsStorage" ) )
+		define( "STORAGE_PATH", __DIR__ . "/../../SkillsStorage/" );
+	else
+	{
+		if( is_dir( __DIR__ . "/storage" ) )
+			mkdir( "STORAGE_PATH", __DIR__ . "/storage"  );
+		define( "STORAGE_PATH", __DIR__ . "/storage/" );
+	}
+
 	define( "SELF_REGISTER", 1 );
 
 	$backupTables = array(
 		"user_tab", "group_member", "user_login_prot",
-		"skills", "regions", "neighbours", "const_values", "applicants", "appl_skills", "company", "jobs", "job_skills", "application"
+		"skills", "
+		regions", "neighbours", "const_values", 
+		"applicants", "appl_skills", 
+		"company", 
+		"jobs", "job_skills", 
+		"application", 
+		"docs"
 	);
 
 	date_default_timezone_set('Europe/Vienna');

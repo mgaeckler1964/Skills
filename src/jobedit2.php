@@ -4,8 +4,10 @@
 	require_once( "includes/components/login.php" ); 
 
 	include_once( "includes/tools/tools.php" ); 
-	$job = putSessionJob( $_POST );
+	$job = putSessionJobFile( putSessionJob( $_POST ), $_POST, $_FILES );
+
 	$id = $_POST['id'];
+	$sessionJobKey = "job_" . $id;
 
 	if( $_POST['func'] == SAVE_FUNC )
 	{
@@ -61,7 +63,17 @@
 			);
 		}
 
-
+		if($job[$jobFileInfo['uiDeleteName']])
+			deleteDocument( $dbConnect, $job[$jobFileInfo['idFieldName']] );
+		if( !is_object( $result ) && array_key_exists($jobFileInfo['uiFieldName'], $job) )
+		{
+			saveDocument( 
+				$dbConnect, $actUser['id'], $id, JOB_DESCR, 
+				$job[$jobFileInfo['typeFieldName']], 
+				$job[$jobFileInfo['uiFieldName']],
+				getJobDescr($id) 
+			);
+		}
 
 		if( !is_object( $result ) )
 		{
@@ -87,6 +99,8 @@
 			}
 		}
 		$nextURL = "jobs.php";
+		unset($_SESSION[$sessionJobKey]);
+		unset($_SESSION['job_id']);
 	}
 	else if( $_POST['func'] == ADD_JOB_SKILL_FUNC )
 	{
@@ -114,7 +128,6 @@
 	}
 	else if( $_POST['func'] == CANCEL_FUNC )
 	{
-		$sessionJobKey = "job_" . $id;
 		unset($_SESSION[$sessionJobKey]);
 		unset($_SESSION['job_id']);
 		$nextURL = "jobs.php";
@@ -151,6 +164,12 @@
 				echo "<p>Daten erfolgreich gespeichert.</p>";
 			else
 				include "includes/components/error.php";
+			echo("<p>");
+			print_r($_FILES);
+			echo("</p>");
+			echo("<p>");
+			print_r($_POST);
+			echo("</p>");
 		?>
 		<p><a href='<?php echo($nextURL); ?>'>Weiter</a></p>
 		<?php include( "includes/components/footerlines.php" ); ?>

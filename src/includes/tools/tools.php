@@ -1,5 +1,37 @@
 <?php
 
+$jobFileInfo = array(
+	"uiFieldName" => "jobDoc",
+	"sessionRemoteName" => "remoteDoc",
+	"uiDeleteName" => "delDoc",
+	"idFieldName" => "docID",
+	"typeFieldName" => "docType"
+);
+
+$companyFileInfo = array(
+	"uiFieldName" => "companyDoc",
+	"sessionRemoteName" => "remoteDoc",
+	"uiDeleteName" => "delDoc",
+	"idFieldName" => "docID",
+	"typeFieldName" => "docType"
+);
+
+$applCvInfo = array(
+	"uiFieldName" => "cvFile",
+	"sessionRemoteName" => "remCVfile",
+	"uiDeleteName" => "delCV",
+	"idFieldName" => "cvID",
+	"typeFieldName" => "cvType"
+);
+
+$applMotInfo = array(
+	"uiFieldName" => "motFile",
+	"sessionRemoteName" => "remMotFile",
+	"uiDeleteName" => "delMot",
+	"idFieldName" => "motID",
+	"typeFieldName" => "motType"
+);
+
 // ==========================================================================================================================
 // regions
 // ==========================================================================================================================
@@ -470,6 +502,9 @@
 
 	function getApplicant( $dbConnect, $id )
 	{
+		global $applCvInfo;
+		global $applMotInfo;
+
 		$queryResult = queryDatabase(
 			$dbConnect,
 			"select a.id, a.education, a.position, a.title, a.description, a.birthday, a.planed_time, a.mobility, a.open, r.country, r.symbol ".
@@ -490,6 +525,8 @@
 				$applicant["symbol"] = urldecode($applicant["symbol"]);
 				
 				$applicant['skills'] = getApplicantSkills($dbConnect, $id);
+				$applicant[$applCvInfo["idFieldName"]] = getDocumentID($dbConnect, $id, USER_CV);
+				$applicant[$applMotInfo["idFieldName"]] = getDocumentID($dbConnect, $id, USER_MOTIV);
 			}
 			else
 			{
@@ -504,7 +541,11 @@
 					"planed_time" => null,
 					"mobility" => null,
 					"open" => null,
-					"skills" => array()
+					$applCvInfo["uiDeleteName"] => null,
+					$applMotInfo["uiDeleteName"] => null,
+					"skills" => array(),
+					$applCvInfo["idFieldName"] => null,
+					$applMotInfo["idFieldName"] => null
 				);
 			}
 		}
@@ -522,6 +563,9 @@
 	}
 	function putSessionApplicant( $request )
 	{
+		global $applCvInfo;
+		global $applMotInfo;
+
 		startSession();
 		if( array_key_exists( "applicant", $_SESSION ) )
 			$applicant = $_SESSION['applicant'];
@@ -540,7 +584,10 @@
 		$applicant['description'] = $request["description"];
 		$applicant['planed_time'] = $request["planed_time"];
 		$applicant['mobility'] = $request["mobility"];
-		$applicant['open'] = $request["open"];
+		$applicant['open'] = array_key_exists("open", $request ) ? 1 : 0;
+		$tmp = $applCvInfo["uiDeleteName"];
+		$applicant[$tmp] = checkBoolField($request, $tmp );
+		$applicant[$applMotInfo["uiDeleteName"]] = checkBoolField($request, $applMotInfo["uiDeleteName"] );
 		$newSkills = array();
 		foreach($applicant['skills'] as $skill )
 		{
@@ -551,6 +598,39 @@
 		}
 		$applicant['skills'] = $newSkills;
 		
+		$_SESSION['applicant'] = $applicant;
+		return $applicant;
+	}
+
+	function putSessionApplFiles( $applicant, $reqFiles )
+	{
+		global $actUser;
+		global $applCvInfo;
+		global $applMotInfo;
+	
+		$tmpFile = $reqFiles[$applCvInfo["uiFieldName"]]['tmp_name'];
+		if( $tmpFile && is_uploaded_file( $tmpFile ))
+		{
+			$destFile = STORAGE_PATH . $actUser['id'] . "cvFile.tmp";
+			if( move_uploaded_file( $tmpFile, $destFile ) )
+			{
+				$applicant[$applCvInfo["uiFieldName"]] = $destFile;
+				$applicant[$applCvInfo["sessionRemoteName"]] = $reqFiles[$applCvInfo["uiFieldName"]]['name'];
+				$applicant[$applCvInfo["typeFieldName"]] = $reqFiles[$applCvInfo["uiFieldName"]]['type'];
+			}
+		}
+
+		$tmpFile = $reqFiles[$applMotInfo["uiFieldName"]]['tmp_name'];
+		if( $tmpFile && is_uploaded_file( $tmpFile ))
+		{
+			$destFile = STORAGE_PATH . $actUser['id'] . "motFile.tmp";
+			if( move_uploaded_file( $tmpFile, $destFile ) )
+			{
+				$applicant[$applMotInfo["uiFieldName"]] = $destFile;
+				$applicant[$applMotInfo["sessionRemoteName"]] = $reqFiles[$applMotInfo["uiFieldName"]]['name'];
+				$applicant[$applMotInfo["typeFieldName"]] = $reqFiles[$applMotInfo["uiFieldName"]]['type'];
+			}
+		}
 		$_SESSION['applicant'] = $applicant;
 		return $applicant;
 	}
@@ -586,6 +666,7 @@
 				$company["address"] = urldecode($company["address"]);
 				$company["country"] = urldecode($company["country"]);
 				$company["symbol"] = urldecode($company["symbol"]);
+				$company['docID'] = getDocumentID($dbConnect, $id, COMPANY_DESCR);
 			}
 			else
 			{
@@ -640,8 +721,27 @@
 // Jobs
 // ==========================================================================================================================
 
+	function createEmptyJob()
+	{
+		global $jobFileInfo;
+		$job = array(
+			"job_title" => "",
+			"department" => "",
+			"position" => null,
+			"company_id" => null,
+			"company_name" => null,
+			"visible" => null,
+			"open_date" => time(),
+			"close_date" => time(),
+			"description" => "",
+			$jobFileInfo["idFieldName"] => null,
+			"skills" => array()
+		);
+		return $job;
+	}
 	function getJob( $dbConnect, $id )
 	{
+		global $jobFileInfo;
 		$queryResult = queryDatabase(
 			$dbConnect,
 			"select j.id, j.company_id, j.job_title, j.department, j.position, j.visible, j.open_date, j.close_date, j.description, ".
@@ -662,22 +762,11 @@
 				$job["description"] = urldecode($job["description"]);
 				$job["company_name"] = urldecode($job["company_name"]);
 				$job["skills"] = getJobSkills( $dbConnect, $id );
-				
+				$job[$jobFileInfo["idFieldName"]] = getDocumentID($dbConnect, $id, JOB_DESCR);
 			}
 			else
 			{
-				$job = array(
-					"job_title" => "",
-					"department" => "",
-					"position" => null,
-					"company_id" => null,
-					"company_name" => null,
-					"visible" => null,
-					"open_date" => time(),
-					"close_date" => time(),
-					"description" => "",
-					"skills" => array()
-				);
+				$job = createEmptyJob();
 			}
 		}
 		else
@@ -704,6 +793,8 @@
 
 	function putSessionJob( $request )
 	{
+		global $jobFileInfo;
+
 		startSession();
 		$id = $request['id'];
 		$sessionJobKey = "job_" . $id;
@@ -711,21 +802,21 @@
 		if( array_key_exists( $sessionJobKey, $_SESSION ) )
 			$job = $_SESSION[$sessionJobKey];
 		else
-		{
-			$job = array();
-			$job['skills'] = array();
-		}
-		
-		if( !array_key_exists("company_id", $job) && array_key_exists("company_id",$request) && is_numeric($request["company_id"]) )
+			$job = createEmptyJob();
+
+		if( !$job["company_id"] && array_key_exists("company_id",$request) && is_numeric($request["company_id"]) )
 			$job['company_id'] = $request["company_id"];
-		if( !array_key_exists("company_name", $job) && array_key_exists("company_name",$request) )
+		if( !$job["company_name"] && array_key_exists("company_name",$request) )
 			$job['company_name'] = $request["company_name"];
 
 		$job['job_title'] = $request["job_title"];
 		$job['department'] = $request["department"];
 		$job['position'] = $request["position"];
 		$job['description'] = $request["description"];
-		$job['visible'] = (array_key_exists( "visible",  $request ) && $request["visible"] ? 1 : 0);
+		$job['visible'] = checkBoolField($request, "visible");
+		$tmp = $jobFileInfo["uiDeleteName"];
+		$job[$tmp] = checkBoolField($request, $tmp );
+
 		$job['open_date'] = strtotime($request['open_date']);;
 		$job['close_date'] = strtotime($request['close_date']);;
 
@@ -737,6 +828,29 @@
 		}
 		$job['skills'] = $newSkills;
 		
+		$_SESSION[$sessionJobKey] = $job;
+		return $job;
+	}
+
+	function putSessionJobFile( $job, $request, $reqFiles)
+	{
+		global $actUser;
+		global $jobFileInfo;
+		$id = $request['id'];
+		$sessionJobKey = "job_" . $id;
+
+		$fieldName = $jobFileInfo['uiFieldName'];
+		$tmpFile = $reqFiles[$fieldName]['tmp_name'];
+		if( $tmpFile && is_uploaded_file( $tmpFile ))
+		{
+			$destFile = STORAGE_PATH . $actUser['id'] . $id . "jobFile.tmp";
+			if( move_uploaded_file( $tmpFile, $destFile ) )
+			{
+				$job[$fieldName] = $destFile;
+				$job[$jobFileInfo['sessionRemoteName']] = $reqFiles[$fieldName]['name'];
+				$job[$jobFileInfo['typeFieldName']] = $reqFiles[$fieldName]['type'];
+			}
+		}
 		$_SESSION[$sessionJobKey] = $job;
 		return $job;
 	}
@@ -854,4 +968,171 @@
 	}
 
 // ==========================================================================================================================
+// Documents
+// ==========================================================================================================================
+
+	define('USER_CV', 1);
+	define('USER_MOTIV', 2);
+	define('APPL_CV', 3);
+	define('APPL_MOTIV', 4);
+	define('COMPANY_DESCR', 5);
+	define('JOB_DESCR', 6);
+
+	function writeFileInput($record, $fieldInfo, $delFlag, $readOnly )
+	{
+		if( !$readOnly )
+		{
+			echo( "<input type='file' name='".$fieldInfo['uiFieldName']."' accept='application/pdf'>" );
+			if( array_key_exists( $fieldInfo["sessionRemoteName"], $record) ) 
+				echo($record[$fieldInfo["sessionRemoteName"]]." "); 
+		}
+		if( $record[$fieldInfo["idFieldName"]] ) 
+		{
+			echo("<a href='viewDoc.php?id=".$record[$fieldInfo["idFieldName"]]."'>Anzeigen</a> ");
+			if(!$readOnly )
+			{
+				createCheckbox( $fieldInfo['uiDeleteName'], $delFlag, 1, $readOnly );
+				echo " L&ouml;schen";
+			}
+		}
+	}
+	
+	function getDocumentID( $dbConnect, $entityID, $kind )
+	{
+		$id = null;
+		$queryResult = queryDatabase( $dbConnect, "select id from docs where entity_id = $1 and kind = $2", array($entityID, $kind) );
+		if( $queryResult && !is_object( $queryResult ) )
+		{
+			$doc = fetchQueryRow( $queryResult );
+			if( $doc )
+				$id = $doc['id'];
+		}
+		
+		return $id;
+	}
+	function getDocument( $dbConnect, $ID )
+	{
+		$doc = null;
+		$queryResult = queryDatabase( $dbConnect, "select id, user_id, entity_id, kind, mimetype from docs where id = $1", array($ID) );
+		if( $queryResult && !is_object( $queryResult ) )
+		{
+			$doc = fetchQueryRow( $queryResult );
+			if( $doc )
+				$doc['path'] = STORAGE_PATH . $doc['entity_id'] ."_" . $doc['kind'] . ".dat";
+		}
+		return $doc;
+	}
+	function deleteDocument( $dbConnect, $docID )
+	{
+		$doc = getDocument( $dbConnect, $docID );
+		if( $doc )
+		{
+			queryDatabase( $dbConnect, "delete from docs where id = $1", array($docID) );
+			unlink($doc['path']);
+		}
+	}
+
+	function saveDocument( $dbConnect, $userID, $entityID, $kind, $mimeType, $source, $target )
+	{
+		$result = false;
+		
+		$docID = getDocumentID( $dbConnect, $entityID, $kind );
+		if( $docID )
+			queryDatabase( $dbConnect, "delete from docs where id = $1", array($docID) );
+		else
+			$docID = getNextID( $dbConnect, "docs", "id" );
+
+		$queryResult = queryDatabase( 
+			$dbConnect, 
+			"insert into docs ( id, user_id, entity_id, kind, mimetype ) values ($1, $2, $3, $4, $5)",
+			array($docID, $userID, $entityID, $kind, $mimeType )
+		);
+		if( $queryResult && !is_object( $queryResult ) )
+		{
+			$result = rename( $source, $target );
+		}
+		
+		return $result;
+	}
+	function getUserCV( $userID )
+	{
+		return STORAGE_PATH . $userID ."_" . USER_CV . ".dat";
+	}
+	function getUserMotivation( $userID )
+	{
+		return STORAGE_PATH . $userID ."_" . USER_MOTIV . ".dat";
+	}
+
+	function getApplCV( $applicationID )
+	{
+		return STORAGE_PATH . $applicationID ."_" . APPL_CV . ".dat";
+	}
+	function getApplMotivation( $applicationID )
+	{
+		return STORAGE_PATH . $applicationID ."_" . APPL_MOTIV . ".dat";
+	}
+
+	function getCompanyDescr( $compayID )
+	{
+		return STORAGE_PATH . $compayID ."_" . COMPANY_DESCR . ".dat";
+	}
+	function getJobDescr( $jobID )
+	{
+		return STORAGE_PATH . $jobID ."_" . JOB_DESCR . ".dat";
+	}
+
+	function findUserCV($dbConnect, $userID )
+	{
+		$fileName = null;
+		$id = getDocumentID( $dbConnect, $userID, USER_CV );
+		if( $id )
+			$fileName = getUserCV( $userID );
+		return $fileName;
+	}	
+	function findUserMotivation($dbConnect, $userID )
+	{
+		$fileName = null;
+		$id = getDocumentID( $dbConnect, $userID, USER_MOTIV );
+		if( $id )
+			$fileName = getUserMotivation( $userID );
+		return $fileName;
+	}	
+
+	function findApplCV($dbConnect, $applID )
+	{
+		$fileName = null;
+		$id = getDocumentID( $dbConnect, $applID, APPL_CV );
+		if( $id )
+			$fileName = getApplCV( $applID );
+		return $fileName;
+	}	
+	function findApplMotivation($dbConnect, $applID )
+	{
+		$fileName = null;
+		$id = getDocumentID( $dbConnect, $applID, APPL_MOTIV );
+		if( $id )
+			$fileName = getApplMotivation( $applID );
+		return $fileName;
+	}	
+
+	function findCompanyDescr( $compayID )
+	{
+		$fileName = null;
+		$id = getDocumentID( $dbConnect, $compayID, COMPANY_DESCR );
+		if( $id )
+			$fileName = getCompanyDescr( $compayID );
+		return $fileName;
+	}
+	function findJobDescr( $jobID )
+	{
+		$fileName = null;
+		$id = getDocumentID( $dbConnect, $jobID, JOB_DESCR );
+		if( $id )
+			$fileName = getJobDescr( $jobID );
+		return $fileName;
+	}
+
+
+// ==========================================================================================================================
 ?>
+

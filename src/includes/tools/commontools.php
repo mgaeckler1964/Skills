@@ -17,6 +17,11 @@
 
 		return $isMobile;
 	}
+	function checkBoolField( $rec, $field )
+	{
+		return $rec && is_array($rec) && array_key_exists( $field, $rec ) && $rec[$field] ? 1 : 0;
+	}
+	
 
 	// ----------------------------------------------------------------------------------------------------------------------
 	// DB schema
@@ -188,9 +193,6 @@
 	
 	function createCheckbox( $fName, $fValue, $checkedValue, $readOnly )
 	{
-		if( is_numeric($checkedValue) && !is_numeric($fValue) )
-			$fValue = 0;
-
 		$readOnly = $readOnly ? "disabled" : "";
 		$checked = $fValue == $checkedValue ? "checked" : "";
 

@@ -76,7 +76,10 @@
 						<?php createMemo("description", $description, isset( $readOnly ), false ); ?>
 					</td>
 				</tr>
-				<tr><td class="fieldLabel">Beschreibung</td><td><input type="file" name="companyFile"></td></tr>
+				<tr><td class="fieldLabel">Beschreibung</td>
+				<td>
+					<?php writeFileInput( $company, $companyFileInfo, false, isset($readOnly) ); ?>
+				</td></tr>
 
 				<?php if( !isset( $readOnly ) ) { ?>
 					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>

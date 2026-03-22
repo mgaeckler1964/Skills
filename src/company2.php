@@ -16,6 +16,7 @@
 		$country = urlencode(strtoupper($_POST['country']));
 		$symbol = urlencode(strtoupper($_POST['symbol']));
 		$regionID = getRegionID($dbConnect, $country, $symbol );
+		$delDoc = checkBoolField($_POST, $companyFileInfo['uiDeleteName']);
 	
 		if( !$regionID )
 		{
@@ -44,6 +45,23 @@
 					"where id = $1", 
 					array( $id, $name, $branch, $foundation, $employees, $address, $description, $regionID )
 				);
+			}
+
+			if($delDoc)
+				deleteDocument( $dbConnect, getDocumentID( $dbConnect, $id, COMPANY_DESCR ) );
+			$fieldName = $companyFileInfo['uiFieldName'];
+			if( !is_object( $result ) && array_key_exists($fieldName, $_FILES) )
+			{
+				$tmpFile = $_FILES[$fieldName]['tmp_name'];
+				if( $tmpFile && is_uploaded_file( $tmpFile ) )
+				{
+					saveDocument( 
+						$dbConnect, $actUser['id'], $id, COMPANY_DESCR, 
+						$_FILES[$fieldName]['type'], 
+						$tmpFile,
+						getCompanyDescr($id) 
+					);
+				}
 			}
 		}
 	}
@@ -85,6 +103,12 @@
 				echo "<p>Daten erfolgreich gespeichert.</p>";
 			else
 				include "includes/components/error.php";
+				
+			echo("<BR>");
+			print_r($_POST);
+			echo("<BR>");
+			print_r($_FILES);
+			echo("<BR>");
 		?>
 		<p><a href='<?php echo($nextURL); ?>' onClick = "window.history.back();">Weiter</a></p>
 		<?php include( "includes/components/footerlines.php" ); ?>

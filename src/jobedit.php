@@ -48,9 +48,12 @@
 		<?php
 			include( "includes/components/headerlines.php" );
 
+			$delDoc = false;
+
 			if( isset($id) )
 			{
 				$job = getSessionJob( $dbConnect, $id );
+
 				if( $id == 0 || array_key_exists('id', $job ) )
 				{
 					$job_title = $job['job_title'];
@@ -64,6 +67,7 @@
 					$close_date = $job['close_date'];
 					if( !isset($actUser) || $company_id != $actUser['id'] )
 						$readOnly = true;
+					$delDoc = checkBoolField( $job, $jobFileInfo['uiDeleteName'] );
 				}
 				else
 					$error = "Jobangebot nicht gefunden";
@@ -74,6 +78,7 @@
 
 				if( array_key_exists('id', $company ) && $company['id']>0 )
 				{
+					$job = createEmptyJob();
 					$id = 0;
 					$job_title = "";
 					$department = "";
@@ -104,14 +109,12 @@
 				<input type="hidden" name="id" value="<?php echo $id;?>">
 	
 				<table>
-
 					<tr>
 						<td class="fieldLabel">Jobtitel *</td>
 						<td>
 							<?php createField("job_title", "text", $job_title, isset( $readOnly ), false, true ); ?>
 						</td>
 					</tr>
-					
 					<tr>
 						<td class="fieldLabel">Firma</td>
 						<td><a href="company.php?id=<?php echo($company_id); ?>"> <?php echo htmlspecialchars($company_name, ENT_QUOTES, 'ISO-8859-1'); ?></a></td>
@@ -137,8 +140,14 @@
 							<?php createMemo("description", $description, isset( $readOnly ), false ); ?>
 						</td>
 					</tr>
-					<tr><td class="fieldLabel">Beschreibung</td><td><input type="file" name="jobFile"></td></tr>
-
+					<tr>
+						<td class="fieldLabel">Beschreibung</td>
+						<td>
+							<?php 
+								writeFileInput($job, $jobFileInfo, $delDoc, isset( $readOnly ) ); 
+							?>
+						</td>
+					</tr>
 					<tr>
 						<td class="fieldLabel">Anforderungen</td>
 						<td><?php
@@ -166,7 +175,6 @@
 							}
 						?></td>
 					</tr>
-	
 					<?php if( !isset( $readOnly ) ) { ?>
 						<tr>
 							<td class="fieldLabel">Sichtbar</td>
@@ -177,7 +185,6 @@
 							<td><input type="datetime-local" step="60" required="required" name="open_date" value="<?php echo htmlspecialchars(formatHtmlTimeStamp($open_date)); ?>"></td>
 						</tr>
 					<?php } ?>
-
 					<tr>
 						<td class="fieldLabel">Bewerbungsschlu&szlig;</td>
 						<td>
@@ -188,7 +195,6 @@
 							>
 						</td>
 					</tr>
-
 					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>
 						<td class="fieldLabel">&nbsp;</td>

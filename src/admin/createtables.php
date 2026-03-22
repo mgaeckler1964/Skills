@@ -111,14 +111,14 @@
 				}
 
 // -------------------------------------------------------------------------------------------
-
+/*
 				$query = "drop table applicants";
 				$result = queryDatabase( $dbConnect, $query );
 				if( !$result )
 				{
 					echo "<p>applicants konnte nicht gel&ouml;scht werden.</p>\n";
 				}
-
+*/
 				$query = "create table applicants (".
 					"id				int		not null 	primary key,".
 					"education		int," .
@@ -255,6 +255,36 @@
 				if( !$result )
 				{
 					echo "<p>application konnte nicht erstellt werden.</p>\n";
+				}
+
+// -------------------------------------------------------------------------------------------
+/*
+				$query = "drop table docs";
+				$result = queryDatabase( $dbConnect, $query );
+				if( !$result )
+				{
+					echo "<p>docs konnte nicht gel&ouml;scht werden.</p>\n";
+				}
+*/
+				$query = "create table docs (".
+					"id				int				not null 	primary key,".
+					"user_id		int				not null," .
+					"entity_id		int				not null," .
+					"kind			int				not null," .
+					"mimetype		varchar(64)		not null" .
+				")";
+				
+				$result = queryDatabase( $dbConnect, $query );
+				if( !$result )
+				{
+					echo "<p>docs konnte nicht erstellt werden.</p>\n";
+				}
+
+				$query = "create unique index docKindIdx on docs (entity_id,kind)";
+				$result = queryDatabase( $dbConnect, $query );
+				if( !$result || is_object( $result ) )
+				{
+					$error .= "<p>docKindIdx konnte nicht erstellt werden.</p>\n";
 				}
 
 // -------------------------------------------------------------------------------------------

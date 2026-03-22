@@ -5,7 +5,7 @@
 	$id = $actUser['id'];
 
 	include_once( "includes/tools/tools.php" ); 
-	$applicant = putSessionApplicant( $_POST );
+	$applicant = putSessionApplFiles( putSessionApplicant( $_POST ), $_FILES );
 
 	if( $_POST['func'] == SAVE_FUNC )
 	{
@@ -75,6 +75,31 @@
 			}
 		}
 
+		if( $applicant[$applCvInfo['uiDeleteName']] )
+			deleteDocument( $dbConnect, $applicant[$applCvInfo['idFieldName']] );
+		if( !is_object( $result ) && array_key_exists($applCvInfo['uiFieldName'], $applicant) )
+		{
+			saveDocument( 
+				$dbConnect, $id, $id, USER_CV, 
+				$applicant[$applCvInfo['typeFieldName']], 
+				$applicant[$applCvInfo['uiFieldName']], 
+				getUserCV($id) 
+			);
+		}
+
+		if($applicant[$applMotInfo['uiDeleteName']])
+			deleteDocument( $dbConnect, $applicant[$applMotInfo['idFieldName']] );
+		if( !is_object( $result ) && array_key_exists($applMotInfo['uiFieldName'], $applicant) )
+		{
+			saveDocument( 
+				$dbConnect, $id, $id, USER_MOTIV, 
+				$applicant[$applMotInfo['typeFieldName']], 
+				$applicant[$applMotInfo['uiFieldName']],
+				getUserMotivation($id) 
+			);
+		}
+
+		unset($_SESSION['applicant']);
 		$nextURL = "index.php";
 	}
 	else if( $_POST['func'] == ADD_SKILL_FUNC )
@@ -134,6 +159,12 @@
 				echo "<p>Daten erfolgreich gespeichert.</p>";
 			else
 				include "includes/components/error.php";
+				echo("<p>");
+				print_r($_FILES);
+				echo("</p>");
+				echo("<p>");
+				print_r($_POST);
+				echo("</p>");
 		?>
 		<p><a href='<?php echo($nextURL); ?>'>Weiter</a></p>
 		<?php include( "includes/components/footerlines.php" ); ?>
