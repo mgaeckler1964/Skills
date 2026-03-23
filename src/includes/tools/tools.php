@@ -689,7 +689,8 @@ $applMotInfo = array(
 					"address" => null,
 					"description" => "",
 					"country" => "",
-					"symbol" => ""
+					"symbol" => "",
+					"docID" => null
 				);
 			}
 		}
