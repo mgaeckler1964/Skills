@@ -125,6 +125,8 @@
 					</td></tr>
 					<tr><td class="fieldLabel">&Ouml;ffentlich</td><td>
 						<?php createCheckbox( "open", $open, 1, $readOnly ); ?>
+						<i>Hier legen Sie fest, ob Sie in einer Profilsuche sichtbar sein wollen. 
+						Es hat keinen Einflu&szlig; f&uuml;r Firmen, bei denen Sie sich beworben haben.</i>
 					</td></tr>
 				<?php } ?>
 				<tr>
