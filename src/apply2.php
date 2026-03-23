@@ -12,7 +12,7 @@
 	$delCV = checkBoolField($_POST, $applCvInfo["uiDeleteName"]);
 	$delMot = checkBoolField($_POST, $applMotInfo["uiDeleteName"]);
 
-	$nextURL = "jobs.php?mode=browse";
+	$nextURL = "jobs.php";
 	
 	if( $jobID>0 && $id )
 	{
@@ -47,7 +47,6 @@
 					$id, $jobID, $actUser['id'], time()
 				)
 			);
-
 		}
 		else
 		{
@@ -128,7 +127,9 @@
 	</head>
 	<body>
 		<?php
+//	print_r($_FILES);
 			include( "includes/components/headerlines.php" );
+//	print_r($_POST);
 
 			if( dbOK($result) )
 				echo "<p>Daten erfolgreich gespeichert. Viel Gl&uuml;ck</p>";

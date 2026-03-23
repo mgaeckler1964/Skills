@@ -80,12 +80,10 @@
 		<form name="searchForm" action="jobs.php" method="post">
 			<table>
 				<tr><td class="fieldLabel">Jobbezeichnung</td><td><input type="text" name="jobTitle" value="<?php if( isset( $jobTitle ) ) echo $jobTitle; ?>"></td></tr>
+
 				<?php if( !$hideCompany ) { ?>
 					<tr><td class="fieldLabel">Firma</td><td><input type="text" name="jobCompany" value="<?php if( isset( $jobCompany ) ) echo $jobCompany; ?>"></td></tr>
-
 				<?php } ?>
-
-
 
 				<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
 				<tr>
@@ -98,7 +96,7 @@
 		</form>
 		
 		<div id="searchResult">
-			<?php include( "jobs2.php" );  ?>
+			<?php include( "jobs2.php" ); ?>
 		</div>
 
 		<?php if( $mode == EDIT_MODE ) { ?>
