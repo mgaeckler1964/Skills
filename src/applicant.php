@@ -5,11 +5,15 @@
 	include_once( "includes/tools/tools.php" ); 
 
 	if( array_key_exists("id", $_GET ) ) {
+		unset($_SESSION['applicant']);
+		$appl_id = checkField( $_GET, "appl_id", null );
+
 		$id = $_GET['id'];
 		$readOnly = true;
 		$theUser = getUser( $dbConnect, $id );
 		$title = "Bewerberprofil";
 	} else {
+		$appl_id = checkField( $_GET, "appl_id", null );
 		$readOnly = false;
 		$id = $actUser['id'];
 		$theUser = $actUser;
@@ -50,7 +54,7 @@
 			$vorname = $theUser['vorname'];
 			$email = $theUser['email'];
 
-			$applicant = getSessionApplicant( $dbConnect, $id );
+			$applicant = getSessionApplicant( $dbConnect, $id, $appl_id );
 
 			$birthday = $applicant['birthday'];
 			$country = $applicant['country'];
@@ -132,7 +136,7 @@
 					<td><?php writeFileInput($applicant, $applCvInfo, $delCV, $readOnly ); ?></td>
 				</tr>
 				<tr>
-					<td class="fieldLabel">Allgemeine Motivation</td>
+					<td class="fieldLabel">Motivation</td>
 					<td><?php writeFileInput($applicant, $applMotInfo, $delMOT, $readOnly ); ?></td>
 				</tr>
 				<tr>

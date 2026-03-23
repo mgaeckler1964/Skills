@@ -500,7 +500,7 @@ $applMotInfo = array(
 		return $result;
 	}
 
-	function getApplicant( $dbConnect, $id )
+	function getApplicant( $dbConnect, $id, $applID=null )
 	{
 		global $applCvInfo;
 		global $applMotInfo;
@@ -525,8 +525,19 @@ $applMotInfo = array(
 				$applicant["symbol"] = urldecode($applicant["symbol"]);
 				
 				$applicant['skills'] = getApplicantSkills($dbConnect, $id);
-				$applicant[$applCvInfo["idFieldName"]] = getDocumentID($dbConnect, $id, USER_CV);
-				$applicant[$applMotInfo["idFieldName"]] = getDocumentID($dbConnect, $id, USER_MOTIV);
+				$cvID = 0;
+				$motID = 0;
+				if( $applID )
+				{
+					$cvID = getDocumentID($dbConnect, $applID, APPL_CV);;
+					$motID = getDocumentID($dbConnect, $applID, APPL_MOTIV);
+				}
+				if( !$cvID )
+					$cvID = getDocumentID($dbConnect, $id, USER_CV);
+				if( !$motID )
+					$motID = getDocumentID($dbConnect, $id, USER_MOTIV);
+				$applicant[$applCvInfo["idFieldName"]] = $cvID;
+				$applicant[$applMotInfo["idFieldName"]] = $motID;
 			}
 			else
 			{
@@ -554,11 +565,11 @@ $applMotInfo = array(
 
 		return $applicant;
 	}
-	function getSessionApplicant( $dbConnect, $id )
+	function getSessionApplicant( $dbConnect, $id, $applID=null )
 	{
 		startSession();
 		if( !array_key_exists( "applicant", $_SESSION ) )
-			$_SESSION['applicant'] = getApplicant( $dbConnect, $id );
+			$_SESSION['applicant'] = getApplicant( $dbConnect, $id, $applID );
 		return $_SESSION['applicant'];
 	}
 	function putSessionApplicant( $request )
@@ -890,12 +901,36 @@ $applMotInfo = array(
 			"where job_id=$1 and user_id = $2",
 			array( $jobID, $userID )
 		);
-		if( $queryResult && !is_object( $queryResult ) )
+		if( dbOK( $queryResult ) )
 		{
 			$rec = fetchQueryRow( $queryResult );
 			return current($rec) > 0;
 		}
 		return false;
+	}
+
+	function getApplication( $dbConnect, $id )
+	{
+		global $applCvInfo, $applMotInfo;
+
+		$queryResult = queryDatabase(
+			$dbConnect,
+			"select id, job_id, user_id, appl_date " .
+			"from application ".
+			"where id=$1",
+			array( $id )
+		);
+		if( dbOK( $queryResult ) )
+		{
+			$appl = fetchQueryRow( $queryResult );
+			$cvDoc = getDocumentID( $dbConnect, $id, APPL_CV );
+			$motDoc = getDocumentID( $dbConnect, $id, APPL_MOTIV );
+			$appl[$applCvInfo["idFieldName"]] = $cvDoc;
+			$appl[$applMotInfo["idFieldName"]] = $motDoc;
+			return $appl;
+
+		}
+		return null;
 	}
 
 	function calculateScore( $dbConnect, $jobID, $userID )

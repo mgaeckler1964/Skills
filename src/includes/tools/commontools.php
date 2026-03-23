@@ -21,7 +21,12 @@
 	{
 		return $rec && is_array($rec) && array_key_exists( $field, $rec ) && $rec[$field] ? 1 : 0;
 	}
-	
+
+	function checkField( $rec, $field, $default )
+	{
+		return $rec && is_array($rec) && array_key_exists( $field, $rec ) ? $rec[$field] : $default;
+	}
+		
 
 	// ----------------------------------------------------------------------------------------------------------------------
 	// DB schema
@@ -36,7 +41,7 @@
 			"where upper(table_name) = upper($1)",
 			array( $tableName )
 		);
-		if( $queryResult && !is_object( $queryResult ) )
+		if( dbOK($queryResult) )
 		{
 			$rec = fetchQueryRow( $queryResult );
 			return current($rec) > 0;
@@ -346,7 +351,7 @@
 				"select max( logindate) as lastlogin from user_login_prot where userid=$1",
 				array( $user['id'] )
 			);
-			if( $queryResult && !is_object( $queryResult ) )
+			if( dbOK($queryResult) )
 			{
 				$queryResult = fetchQueryRow( $queryResult );
 				if( $queryResult && $queryResult['lastlogin'] )
@@ -376,7 +381,7 @@
 			"where id=$1 or email=$2",
 			array( $id, $email )
 		);
-		if( $queryResult && !is_object( $queryResult ) )
+		if( dbOK($queryResult) )
 			$user = fetchUser( $queryResult );
 		
 		
@@ -401,7 +406,7 @@
 			"from user_tab ".
 			"where guest='X' and loginenabled='X'"
 		);
-		if( $queryResult && !is_object( $queryResult ) )
+		if( dbOK($queryResult) )
 			$user = fetchUser( $queryResult );
 		
 		
@@ -411,7 +416,7 @@
 	{
 		$userCount = 0;
 		$queryResult = queryDatabase( $dbConnect, "select count(*) as usercount from user_tab " );
-		if( $queryResult && !is_object( $queryResult ) )
+		if( dbOK($queryResult) )
 		{
 			$queryResult = fetchQueryRow( $queryResult );
 			if( $queryResult )
@@ -424,7 +429,7 @@
 	{
 		$userCount = 0;
 		$queryResult = queryDatabase( $dbConnect, "select count(*) as usercount from user_tab where email=$1", array(urlencode($email)) );
-		if( $queryResult && !is_object( $queryResult ) )
+		if( dbOK($queryResult) )
 		{
 			$queryResult = fetchQueryRow( $queryResult );
 			if( $queryResult )
@@ -433,7 +438,7 @@
 		if( $userCount==0 )
 		{
 			$queryResult = queryDatabase( $dbConnect, "select count(*) as usercount from user_tab where remoteip=$1 and cr_time > $2", array($remoteip, time()-86400 ) );
-			if( $queryResult && !is_object( $queryResult ) )
+			if( dbOK($queryResult) )
 			{
 				$queryResult = fetchQueryRow( $queryResult );
 				if( $queryResult )
@@ -452,7 +457,7 @@
 	{
 		$userCount = 0;
 		$queryResult = queryDatabase( $dbConnect, "select count(*) as guestcount from user_tab where loginenabled = 'X' and guest = 'X'" );
-		if( $queryResult && !is_object( $queryResult ) )
+		if( dbOK($queryResult) )
 		{
 			$queryResult = fetchQueryRow( $queryResult );
 			if( $queryResult )
@@ -491,7 +496,7 @@
 		global $dbConnect;
 
 		$queryResult = queryDatabase( $dbConnect, "select * from user_tab where is_group is null" );
-		if( $queryResult && !is_object( $queryResult ))
+		if( dbOK($queryResult) )
 		{
 			$userTab = array();
 			while( $queryRecord = fetchQueryRow( $queryResult ) )
@@ -507,7 +512,7 @@
 		global $dbConnect;
 
 		$queryResult = queryDatabase( $dbConnect, "select id, email, is_group from user_tab order by email" );
-		if( $queryResult && !is_object( $queryResult ))
+		if( dbOK($queryResult) )
 		{
 			$userTab = array();
 			while( $queryRecord = fetchQueryRow( $queryResult ) ) {
@@ -534,12 +539,12 @@
 		else
 		{
 			$queryResult = queryDatabase( $dbConnect, "delete from group_member where groupId = $1 or member = $2", array( $theUserID, $theUserID ) );
-			if( !is_object($queryResult)  )
+			if( dbOK($queryResult) )
 				$queryResult = queryDatabase( $dbConnect, "delete from user_login_prot where userid = $1", array( $theUserID ) );
-			if( !is_object($queryResult)  )
+			if( dbOK($queryResult) )
 				$queryResult = queryDatabase( $dbConnect, "delete from user_tab where id = $1", array( $theUserID ) );
 			
-			if( is_object($queryResult)  )
+			if( !dbOK($queryResult) )
 				$error = $queryResult;
 		}
 
@@ -555,7 +560,7 @@
 		global $dbConnect;
 
 		$queryResult = queryDatabase( $dbConnect, "select u.id, u.email from user_tab u, group_member g where g.member = u.id and g.groupId = $1", array( $id ) );
-		if( $queryResult && !is_object( $queryResult ))
+		if( dbOK($queryResult) )
 		{
 			$groupMembers = array();
 			while( $queryRecord = fetchQueryRow( $queryResult ) ) {
@@ -575,7 +580,7 @@
 
 		$error = false;
 		$queryResult = queryDatabase( $dbConnect, "insert into group_member( groupId, member ) values ( $1, $2 )", array( $groupId, $member ) );
-		if( is_object( $queryResult ) )
+		if( !dbOK($queryResult) )
 			$error = $queryResult;
 		
 		return $error;
@@ -586,7 +591,7 @@
 
 		$error = false;
 		$queryResult = queryDatabase( $dbConnect, "delete from group_member where groupId =$1 and member = $2", array( $groupId, $member ) );
-		if( is_object( $queryResult ) )
+		if( !dbOK($queryResult) )
 			$error = $queryResult;
 		
 		return $error;
@@ -596,7 +601,7 @@
 		global $dbConnect;
 
 		$queryResult = queryDatabase( $dbConnect, "select groupId from group_member where member = $1", array( $theId ) );
-		if( $queryResult && !is_object( $queryResult ))
+		if( dbOK($queryResult) )
 		{
 			$groups = array();
 			while( $queryRecord = fetchQueryRow( $queryResult ) )

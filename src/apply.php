@@ -9,6 +9,10 @@
 	{
 		$job = getJob( $dbConnect, $jobID );
 	}
+	
+	$applID = checkField($_GET, "appl_id", 0);
+	$application = getApplication( $dbConnect, $applID )
+
 ?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Strict//EN">
 
@@ -18,13 +22,27 @@
 			$title = "Ihre Bewerbung";
 			include_once( "includes/components/defhead.php" );
 		?>
+		<script>
+			function cancelApplication()
+			{
+				if( confirm("Soll die Bewerbung zurückgezogen werden?") )
+				{
+					document.getElementById("fnc").value = "<?php echo CANCEL_FUNC; ?>";
+					document.getElementById("frm").submit();
+				}
+			}
+		</script>
 	</head>
 	<body>
-		<?php include( "includes/components/headerlines.php" ); ?>
+		<?php 
+			include( "includes/components/headerlines.php" ); 
+		?>
 
 		<?php if( jobOK($job, $jobID) ) { ?>
 			<form action="apply2.php" method="post" enctype="multipart/form-data" id="frm">
 				<input type="hidden" name="jobID" value="<?php echo $jobID; ?>">
+				<input type="hidden" name="appl_id" value="<?php echo $applID; ?>">
+				<input type="hidden" name="func" value="save" id="fnc">
 	
 				<table>
 					<tr>
@@ -46,23 +64,34 @@
 						<td><?php echo htmlspecialchars($job['job_title'], ENT_QUOTES, 'ISO-8859-1'); ?></td>
 					</tr>
 					
-					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>
 						<td class="fieldLabel">Lebenslauf</td>
-						<td><input type="file" name="cv"></td>
+						<td><?php writeFileInput($application, $applCvInfo, false, false ); ?></td>
 						<td>Wenn Sie hier keine Datei auswählen, wird Ihr allgemeiner Lebenslauf gezeigt.</td>
 					</tr>
 					<tr>
 						<td class="fieldLabel">Motivation</td>
-						<td><input type="file" name="motivation"></td>
+						<td><?php writeFileInput($application, $applMotInfo, false, false ); ?></td>
 						<td>Wenn Sie hier keine Datei auswählen, wird Ihre allgemeine Motivation gezeigt.</td>
 					</tr>
+
+					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
 					
+					<?php if($application) { ?>
+						<tr>
+							<td class="fieldLabel">Datum</td>
+							<td><?php echo formatTimeStamp($application['appl_date']); ?></td>
+						</tr>
+					<?php } ?>
+
 					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>
 						<td class="fieldLabel">&nbsp;</td>
 						<td>
 							<input type="submit" value="Abschicken">
+							<?php if($application) { ?>
+								<input type='button' onClick='cancelApplication();' value='Zur&uuml;ckziehen'>
+							<?php } ?>
 							<input type='button' onClick='window.history.back();' value='Abbruch'>
 						</td>
 					</tr>
