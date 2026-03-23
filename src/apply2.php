@@ -14,6 +14,21 @@
 
 	$nextURL = "jobs.php?mode=browse";
 	
+	if( $jobID>0 && $id )
+	{
+		$application = getApplication($dbConnect, $id );
+		if( !$application )
+		{
+			$result = false;
+			$jobID=0;
+		}
+		else if($application['user_id'] != $actUser['id'] )
+		{
+			$result = false;
+			$jobID=0;
+		}
+	}
+	
 	if( $jobID>0 )
 	{
 		if( !$id )
@@ -35,7 +50,9 @@
 
 		}
 		else
+		{
 			$result = true;
+		}
 	
 		if($func == CANCEL_FUNC)
 		{

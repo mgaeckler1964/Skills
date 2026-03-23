@@ -924,10 +924,13 @@ $applMotInfo = array(
 		if( dbOK( $queryResult ) )
 		{
 			$appl = fetchQueryRow( $queryResult );
-			$cvDoc = getDocumentID( $dbConnect, $id, APPL_CV );
-			$motDoc = getDocumentID( $dbConnect, $id, APPL_MOTIV );
-			$appl[$applCvInfo["idFieldName"]] = $cvDoc;
-			$appl[$applMotInfo["idFieldName"]] = $motDoc;
+			if( $appl )
+			{
+				$cvDoc = getDocumentID( $dbConnect, $id, APPL_CV );
+				$motDoc = getDocumentID( $dbConnect, $id, APPL_MOTIV );
+				$appl[$applCvInfo["idFieldName"]] = $cvDoc;
+				$appl[$applMotInfo["idFieldName"]] = $motDoc;
+			}
 			return $appl;
 
 		}

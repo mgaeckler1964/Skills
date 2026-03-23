@@ -11,9 +11,22 @@
 	}
 	
 	$applID = checkField($_GET, "appl_id", 0);
-	$application = getApplication( $dbConnect, $applID )
-
+	$application = getApplication( $dbConnect, $applID );
+	if( !$application )
+	{
+		if($applID)
+		{
+			$jobID = null;
+			$job = null;
+		}
+	}
+	else if( $application['job_id']!=$jobID || $application['user_id'] != $actUser['id'] )
+	{
+		$jobID = null;
+		$job = null;
+	}
 ?>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Strict//EN">
 
 <html>
@@ -98,7 +111,7 @@
 				</table>
 			</form>
 		<?php } else { ?>
-			Ung&uuml;ltige Jobid oder Job nicht gefunden.
+			Ung&uuml;ltige Jobid, Job oder Bewerbung nicht gefunden.
 		<?php } ?>
 
 		<?php include( "includes/components/footerlines.php" ); ?>
