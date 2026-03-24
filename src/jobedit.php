@@ -49,6 +49,7 @@
 			include( "includes/components/headerlines.php" );
 
 			$delDoc = false;
+			$hasApplicants = false;
 
 			if( isset($id) )
 			{
@@ -68,6 +69,11 @@
 					if( !isset($actUser) || $company_id != $actUser['id'] )
 						$readOnly = true;
 					$delDoc = checkBoolField( $job, $jobFileInfo['uiDeleteName'] );
+					$hasApplicants = hasApplicants($dbConnect, $id);
+					if( $hasApplicants || $open_date < time() )
+					{
+						$visible = 1;
+					}
 				}
 				else
 					$error = "Jobangebot nicht gefunden";
@@ -178,21 +184,21 @@
 					<?php if( !isset( $readOnly ) ) { ?>
 						<tr>
 							<td class="fieldLabel">Sichtbar</td>
-							<td><input type="checkbox" name="visible" value="1" <?php echo ($visible ? "checked" : ""); ?>></td>
+							<td>
+								<?php  createCheckbox( "visible", $visible, 1, $hasApplicants ); ?>
+							</td>
 						</tr>
 						<tr>
 							<td class="fieldLabel">Offen ab</td>
-							<td><input type="datetime-local" step="60" required="required" name="open_date" value="<?php echo htmlspecialchars(formatHtmlTimeStamp($open_date)); ?>"></td>
+							<td>
+								<?php createDateTime("open_date", $open_date, $hasApplicants, false); ?>
+							</td>
 						</tr>
 					<?php } ?>
 					<tr>
 						<td class="fieldLabel">Bewerbungsschlu&szlig;</td>
 						<td>
-							<input type="datetime-local" step="60" required="required" name="close_date" value="<?php 
-								echo htmlspecialchars(formatHtmlTimeStamp($close_date)); 
-							?>" <?php 
-								if( isset( $readOnly ) ) echo"readonly"; ?>							
-							>
+							<?php createDateTime("close_date", $close_date, isset( $readOnly ), false); ?>
 						</td>
 					</tr>
 					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>

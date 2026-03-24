@@ -744,6 +744,7 @@ $applMotInfo = array(
 			"company_name" => null,
 			"visible" => null,
 			"open_date" => time(),
+			"db_close_date" => time(),
 			"close_date" => time(),
 			"description" => "",
 			$jobFileInfo["idFieldName"] => null,
@@ -775,6 +776,7 @@ $applMotInfo = array(
 				$job["company_name"] = urldecode($job["company_name"]);
 				$job["skills"] = getJobSkills( $dbConnect, $id );
 				$job[$jobFileInfo["idFieldName"]] = getDocumentID($dbConnect, $id, JOB_DESCR);
+				$job["db_close_date"] = $job["close_date"];
 			}
 			else
 			{
@@ -901,6 +903,23 @@ $applMotInfo = array(
 			"from application ".
 			"where job_id=$1 and user_id = $2",
 			array( $jobID, $userID )
+		);
+		if( dbOK( $queryResult ) )
+		{
+			$rec = fetchQueryRow( $queryResult );
+			return current($rec) > 0;
+		}
+		return false;
+	}
+
+	function hasApplicants( $dbConnect, $jobID )
+	{
+		$queryResult = queryDatabase(
+			$dbConnect,
+			"select count(*) " .
+			"from application ".
+			"where job_id=$1",
+			array( $jobID )
 		);
 		if( dbOK( $queryResult ) )
 		{

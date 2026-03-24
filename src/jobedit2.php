@@ -19,6 +19,20 @@
 		$visible = $job["visible"];
 		$open_date = $job["open_date"];
 		$close_date = $job["close_date"];
+		$db_close_date = $job["db_close_date"];
+
+		$hasApplicants = $id ? hasApplicants($dbConnect, $id) : false;
+		
+		if( $open_date < time() )
+			$visible = 1;
+		if( $hasApplicants )
+		{
+			$visible = 1;
+			if( $open_date > time() )
+				$open_date = time();
+			if( $close_date < $db_close_date )
+				$close_date = $db_close_date;
+		}
 
 		if( !$company_id )
 			$company_id = $actUser['id'];
