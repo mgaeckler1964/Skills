@@ -1,10 +1,13 @@
 <?php 
+	include_once( "includes/tools/commontools.php" ); 
+	startSession();
 	include_once( "includes/components/login.php" ); 
 	$jobID = $_POST['jobID'];
 	if( !is_numeric($jobID) )
 		$jobID=0;
-
+	
 	include_once( "includes/tools/tools.php" ); 
+	clrSessionJob($jobID);
 
 	$id = checkField($_POST, "appl_id", 0);
 	$func = checkField($_POST, "func", "save");
@@ -13,6 +16,26 @@
 	$delMot = checkBoolField($_POST, $applMotInfo["uiDeleteName"]);
 
 	$nextURL = "jobs.php";
+	
+	if( $jobID>0 )
+	{
+		$job=getJob($dbConnect, $id);
+		if( jobOK($job, $id ) )
+		{
+			$open_date = $job['open_date'];
+			$close_date = $job['close_date'];
+			if($open_date > time() || $close_date < time )
+			{
+				$job = null;
+				$jobID = 0;
+			}
+		}
+		else
+		{
+			$job = null;
+			$jobID = 0;
+		}
+	}
 	
 	if( $jobID>0 && $id )
 	{

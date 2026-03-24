@@ -1,4 +1,6 @@
-<?php 
+<?php
+	include_once( "includes/tools/commontools.php" ); 
+	startSession();
 	include_once( "includes/components/login.php" ); 
 	include_once( "includes/tools/tools.php" ); 
 	$jobID = $_GET['id'];
@@ -7,6 +9,7 @@
 		
 	if( $jobID )
 	{
+		clrSessionJob($jobID);
 		$job = getJob( $dbConnect, $jobID );
 	}
 	

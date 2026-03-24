@@ -845,7 +845,6 @@ $applMotInfo = array(
 		$_SESSION[$sessionJobKey] = $job;
 		return $job;
 	}
-
 	function putSessionJobFile( $job, $request, $reqFiles)
 	{
 		global $actUser;
@@ -869,6 +868,17 @@ $applMotInfo = array(
 		return $job;
 	}
 
+	function getSessionJobKey($id)
+	{
+		$sessionJobKey = "job_" . $id;
+		return $sessionJobKey;
+	}
+	function clrSessionJob($id)
+	{
+		$sessionJobKey = getSessionJobKey($id);
+		unset($_SESSION[$sessionJobKey]);
+		unset($_SESSION['job_id']);
+	}
 	function fetchJob( $queryResult )
 	{
 		global $dbConnect;
