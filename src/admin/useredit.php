@@ -116,8 +116,8 @@
 			<?php } ?>
 
 			<table>
-				<tr><td class="fieldLabel">Name</td><td><input size=35 maxlength=64 type="text" required="required" name="nachname" value="<?php echo htmlspecialchars($nachname, ENT_QUOTES, 'ISO-8859-1'); ?>"></td></tr>
-				<tr><td class="fieldLabel">Vorname</td><td><input size=35 maxlength=64 type="text" required="required" name="vorname" value="<?php echo htmlspecialchars($vorname, ENT_QUOTES, 'ISO-8859-1'); ?>"></td></tr>
+				<tr><td class="fieldLabel">Name *</td><td><input size=35 maxlength=64 type="text" required="required" name="nachname" value="<?php echo htmlspecialchars($nachname, ENT_QUOTES, 'ISO-8859-1'); ?>"></td></tr>
+				<tr><td class="fieldLabel">Vorname *</td><td><input size=35 maxlength=64 type="text" required="required" name="vorname" value="<?php echo htmlspecialchars($vorname, ENT_QUOTES, 'ISO-8859-1'); ?>"></td></tr>
 				<tr><td class="fieldLabel">Anschrift</td><td><input size=35 maxlength=164 type="text" name="strasse" value="<?php echo htmlspecialchars($strasse, ENT_QUOTES, 'ISO-8859-1'); ?>"></td></tr>
 				<tr><td class="fieldLabel">Postfach</td><td><input size=35 maxlength=164 type="text" name="postfach" value="<?php echo htmlspecialchars($postfach, ENT_QUOTES, 'ISO-8859-1'); ?>"></td></tr>
 				<tr><td class="fieldLabel">Land-PLZ Ort</td><td>
@@ -125,7 +125,7 @@
 					<input type=text" name="plz" size=4 maxlength=6 value="<?php echo htmlspecialchars($plz, ENT_QUOTES, 'ISO-8859-1'); ?>">
 					<input type=text" name="ort" size=22 maxlength=48 value="<?php echo htmlspecialchars($ort, ENT_QUOTES, 'ISO-8859-1'); ?>">
 				</td></tr>
-				<tr><td class="fieldLabel">E-Mail</td><td>
+				<tr><td class="fieldLabel">E-Mail *</td><td>
 					<?php if( $profileMode ) { ?>
 						<input type="hidden" name="profile" value="1">
 						<input type="hidden" required="required" name="uiemail" value="<?php echo htmlspecialchars($email, ENT_QUOTES, 'ISO-8859-1'); ?>">
