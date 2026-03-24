@@ -112,7 +112,7 @@
 					<tr>
 						<td class="fieldLabel">Jobtitel *</td>
 						<td>
-							<?php createField("job_title", "text", $job_title, isset( $readOnly ), false, true ); ?>
+							<?php createField("job_title", "text", $job_title, isset( $readOnly ), false, true, TEXT_UI_WIDTH, 128 ); ?>
 						</td>
 					</tr>
 					<tr>
@@ -137,7 +137,7 @@
 					<tr>
 						<td class="fieldLabel">Kurzbeschreibung *</td>
 						<td>
-							<?php createMemo("description", $description, isset( $readOnly ), false ); ?>
+							<?php createMemo("description", $description, isset( $readOnly ), false, false, TEXT_UI_WIDTH, TEXT_UI_HEIGHT ); ?>
 						</td>
 					</tr>
 					<tr>

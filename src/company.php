@@ -43,7 +43,7 @@
 
 			<table>
 				<tr><td class="fieldLabel">Name *</td><td>
-					<?php createField("name", "text", $name, isset( $readOnly ), false, true ); ?>
+					<?php createField("name", "text", $name, isset( $readOnly ), false, true, TEXT_UI_WIDTH, 128 ); ?>
 				</td></tr>
 				<tr>
 					<td class="fieldLabel">Branche *</td>
@@ -63,17 +63,17 @@
 				</td></tr>
 				
 				<tr><td class="fieldLabel">Land-Bezirk *</td><td>
-					<?php createField("country", "text", $country, isset( $readOnly ), false, 4, 4 ); ?> -
+					<?php createField("country", "text", $country, isset( $readOnly ), false, false, 4, 4 ); ?> -
 					<?php createField("symbol", "text", $symbol, isset( $readOnly ), false, 8, 8 ); ?>
 				</td></tr>
 				<tr><td class="fieldLabel">Adresse *</td><td>
-					<?php createField("address", "text", $address, isset( $readOnly ), false ); ?>
+					<?php createField("address", "text", $address, isset( $readOnly ), false, false, TEXT_UI_WIDTH, 128 ); ?>
 				</td></tr>
 
 				<tr>
 					<td class="fieldLabel">Kurzbeschreibung</td>
 					<td>
-						<?php createMemo("description", $description, isset( $readOnly ), false ); ?>
+						<?php createMemo("description", $description, isset( $readOnly ), false, 1024, TEXT_UI_WIDTH, TEXT_UI_HEIGHT ); ?>
 					</td>
 				</tr>
 				<tr><td class="fieldLabel">Beschreibung</td>

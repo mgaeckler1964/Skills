@@ -63,6 +63,9 @@
 
 	define( "SELF_REGISTER", 1 );
 
+	define( "TEXT_UI_WIDTH", 80 );
+	define( "TEXT_UI_HEIGHT", 8 );
+	
 	$backupTables = array(
 		"user_tab", "group_member", "user_login_prot",
 		"skills", "

@@ -118,7 +118,6 @@
 							echo(" Monate");
 					?>
 				</td></tr>
-				
 				<?php if ( !$readOnly ) { ?>
 					<tr><td class="fieldLabel">Mobilit&auml;t</td><td>
 						<?php createField( "mobility", "number", $mobility, $readOnly, true ); ?> <i>..., wieviele Bezirke Sie zur Erreichung Ihres Arbeitsplatz befahren wollen.</i>
@@ -131,7 +130,7 @@
 				<?php } ?>
 				<tr>
 					<td class="fieldLabel">Kurzbeschreibung</td>
-					<td><?php createMemo("description", $description, $readOnly, true, 1024, 80, 8 );?></td>
+					<td><?php createMemo("description", $description, $readOnly, true, 1024, TEXT_UI_WIDTH, TEXT_UI_HEIGHT );?></td>
 				</tr>
 				<tr>
 					<td class="fieldLabel">Lebenslauf</td>
