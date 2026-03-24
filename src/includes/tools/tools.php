@@ -1022,10 +1022,10 @@ $applMotInfo = array(
 		if( !$readOnly )
 		{
 			echo( "<input type='file' name='".$fieldInfo['uiFieldName']."' accept='application/pdf'>" );
-			if( array_key_exists( $fieldInfo["sessionRemoteName"], $record) ) 
+			if( $record && array_key_exists( $fieldInfo["sessionRemoteName"], $record) ) 
 				echo($record[$fieldInfo["sessionRemoteName"]]." "); 
 		}
-		if( $record[$fieldInfo["idFieldName"]] ) 
+		if( $record && $record[$fieldInfo["idFieldName"]] ) 
 		{
 			echo("<a href='viewDoc.php?id=".$record[$fieldInfo["idFieldName"]]."'>Anzeigen</a> ");
 			if(!$readOnly )
