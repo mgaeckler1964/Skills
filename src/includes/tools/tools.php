@@ -746,6 +746,7 @@ $applMotInfo = array(
 			"open_date" => time(),
 			"db_close_date" => time(),
 			"close_date" => time(),
+			"max_applicants" => 0,
 			"description" => "",
 			$jobFileInfo["idFieldName"] => null,
 			"skills" => array()
@@ -757,7 +758,7 @@ $applMotInfo = array(
 		global $jobFileInfo;
 		$queryResult = queryDatabase(
 			$dbConnect,
-			"select j.id, j.company_id, j.job_title, j.department, j.position, j.visible, j.open_date, j.close_date, j.description, ".
+			"select j.id, j.company_id, j.job_title, j.department, j.position, j.visible, j.open_date, j.close_date, j.description, j.max_applicants, ".
 				"c.name as company_name " .
 			"from jobs j ".
 			"join company c on c.id = j.company_id " .
@@ -831,8 +832,9 @@ $applMotInfo = array(
 		$tmp = $jobFileInfo["uiDeleteName"];
 		$job[$tmp] = checkBoolField($request, $tmp );
 
-		$job['open_date'] = strtotime($request['open_date']);;
-		$job['close_date'] = strtotime($request['close_date']);;
+		$job['open_date'] = strtotime($request['open_date']);
+		$job['close_date'] = strtotime($request['close_date']);
+		$job['max_applicants'] = $request['max_applicants'];
 
 		$newSkills = array();
 		foreach($job['skills'] as $skill )

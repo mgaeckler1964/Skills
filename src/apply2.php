@@ -17,23 +17,31 @@
 
 	$nextURL = "jobs.php";
 	
+	if( !getApplicantCount($dbConnect, $actUser['id']) )
+	{
+		$jobID = 0;
+		$error = "Kein Bewerberprofil.";
+	}
+	
 	if( $jobID>0 )
 	{
-		$job=getJob($dbConnect, $id);
-		if( jobOK($job, $id ) )
+		$job=getJob($dbConnect, $jobID);
+		if( jobOK($job, $jobID ) )
 		{
 			$open_date = $job['open_date'];
 			$close_date = $job['close_date'];
-			if($open_date > time() || $close_date < time )
+			if($open_date > time() || $close_date < time() )
 			{
 				$job = null;
 				$jobID = 0;
+				$error = "Au&szlig;erhalb der Bewerbungsfrist.";
 			}
 		}
 		else
 		{
 			$job = null;
 			$jobID = 0;
+			$error = "Job nicht gefunden.";
 		}
 	}
 	
@@ -42,11 +50,13 @@
 		$application = getApplication($dbConnect, $id );
 		if( !$application )
 		{
+			$error = "Bewerbung nicht gefunden.";
 			$result = false;
 			$jobID=0;
 		}
 		else if($application['user_id'] != $actUser['id'] )
 		{
+			$error = "Bewerbung nicht gefunden.";
 			$result = false;
 			$jobID=0;
 		}
@@ -132,7 +142,7 @@
 	else
 	{
 		$result = false;
-		$error = "Kein Job";
+		$error = (isset($error) ? $error . " " : "") . "Kein Job oder anderer Fehler";
 	}
 
 ?>

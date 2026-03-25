@@ -66,6 +66,7 @@
 					$visible = $job['visible'];
 					$open_date = $job['open_date'];
 					$close_date = $job['close_date'];
+					$max_applicants = $job['max_applicants'];
 					if( !isset($actUser) || $company_id != $actUser['id'] )
 						$readOnly = true;
 					$delDoc = checkBoolField( $job, $jobFileInfo['uiDeleteName'] );
@@ -95,6 +96,7 @@
 					$company_name = $company['name'];
 					$open_date = time();
 					$close_date = time();
+					$max_applicants = 0;
 				}
 				else
 				{
@@ -172,7 +174,6 @@
 									}
 									else
 									{
-										
 										echo( "<br>Anteil: <input name='part{$skill['skill_id']}' type='number' value='".htmlspecialchars($part, ENT_QUOTES, 'ISO-8859-1')."' required>\n" );
 										echo( "<input type='button' onClick=\"deleteSkill('{$skill['skill_id']}');\" value='Del'>" );
 										echo("<HR>\n");
@@ -198,9 +199,28 @@
 					<tr>
 						<td class="fieldLabel">Bewerbungsschlu&szlig;</td>
 						<td>
-							<?php createDateTime("close_date", $close_date, isset( $readOnly ), false); ?>
+							<?php 
+								createDateTime("close_date", $close_date, isset( $readOnly ), false);
+								if( !isset( $readOnly ) )
+								{
+									if( $close_date < time() )
+										echo (" seit ");
+									else
+										echo (" noch ");
+									echo(getRelativeTime($close_date));
+								}
+							?>
 						</td>
 					</tr>
+					<?php if( !isset( $readOnly ) ) { ?>
+						<tr>
+							<td class="fieldLabel">Max. Anzahl Bewerber *</td>
+							<td>
+								<?php createField("max_applicants", "number", $max_applicants, isset( $readOnly ), false ); ?>
+							</td>
+						</tr>
+					<?php } ?>
+
 					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>
 						<td class="fieldLabel">&nbsp;</td>
@@ -209,12 +229,20 @@
 								<input type="submit" value="Speichern">
 								<input type='button' onClick='addSkill();' value='SKill'>
 								<input type='button' onClick='cancelEdit();' value='Abbruch'>
-							<?php } else if( isset($actUser) && !hasApplication($dbConnect, $id, $actUser['id']) && $open_date < time() && $close_date > time() ){ ?>
-								<a href="apply.php?id=<?php echo $id;?>">Bewerben</a>
-							<?php } else if( $open_date > time() ){ ?>
-								Bewerbung noch nicht offen.
+							<?php } else if( $open_date > time() ) { ?>
+								Bewerbung offen in <?php echo(getRelativeTime($open_date)); ?>.
 							<?php } else if( $close_date < time() ){ ?>
-								Bewerbungsfrist abgelaufen.
+								Bewerbungsfrist abgelaufen seit <?php echo(getRelativeTime($close_date)); ?>.
+							<?php } else if( isset($actUser) ) {
+								if( !getApplicantCount($dbConnect, $actUser['id']) ){ ?>
+									Um sich zu bewerben, m&uuml;ssen Sie ein Bewerberprofil erstellen.
+								<?php } else if( hasApplication($dbConnect, $id, $actUser['id']) ) { ?>
+									Sie haben sich bereits beworben.
+								<?php } else { ?>
+									<a href="apply.php?id=<?php echo $id;?>">Bewerben</a>
+								<?php }
+							} else { ?>
+								Um sich zu bewerben, m&uuml;ssen Sie sich anmelden und ein Bewerberprofil erstellen.
 							<?php } ?>
 						</td>
 					</tr>

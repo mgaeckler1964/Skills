@@ -20,6 +20,7 @@
 		$open_date = $job["open_date"];
 		$close_date = $job["close_date"];
 		$db_close_date = $job["db_close_date"];
+		$max_applicants = $job["max_applicants"];
 
 		$hasApplicants = $id ? hasApplicants($dbConnect, $id) : false;
 		
@@ -47,14 +48,14 @@
 			$id = getNextID( $dbConnect, "jobs", "id" );
 			$result = queryDatabase( $dbConnect,
 				"insert into jobs (" .
-					"id, job_title, position, description, visible, company_id, open_date, close_date, department " .
+					"id, job_title, position, description, visible, status, company_id, open_date, close_date, max_applicants, department " .
 				")" .
 				"values" .
 				"(" .
-					"$1, $2, $3, $4, $5, $6, $7, $8, $9" .
+					"$1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11" .
 				")",
 				array( 
-					$id, $job_title, $position, $description, $visible, $company_id, $open_date, $close_date, $department
+					$id, $job_title, $position, $description, $visible, 0, $company_id, $open_date, $close_date, $max_applicants, $department
 				)
 			);
 		}
@@ -68,11 +69,12 @@
 					"visible = $6, " .
 					"open_date = $7, " .
 					"close_date = $8, " .
-					"department = $9 " .
+					"max_applicants = $9, " .
+					"department = $10 " .
 				"where id = $1 and company_id = $2 ",
 				array( 
 					$id, $company_id, $job_title, $description, $position, 
-					$visible, $open_date, $close_date, $department
+					$visible, $open_date, $close_date, $max_applicants, $department
 				)
 			);
 		}
@@ -178,11 +180,14 @@
 				echo "<p>Daten erfolgreich gespeichert.</p>";
 			else
 				include "includes/components/error.php";
-			echo("<p>");
+			echo("<p>files<br>");
 			print_r($_FILES);
 			echo("</p>");
-			echo("<p>");
+			echo("<p>post<br>");
 			print_r($_POST);
+			echo("</p>");
+			echo("<p>Job<br>");
+			print_r($job);
 			echo("</p>");
 		?>
 		<p><a href='<?php echo($nextURL); ?>'>Weiter</a></p>

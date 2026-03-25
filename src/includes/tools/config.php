@@ -68,8 +68,8 @@
 	
 	$backupTables = array(
 		"user_tab", "group_member", "user_login_prot",
-		"skills", "
-		regions", "neighbours", "const_values", 
+		"skills", 
+		"regions", "neighbours", "const_values", 
 		"applicants", "appl_skills", 
 		"company", 
 		"jobs", "job_skills", 

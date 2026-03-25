@@ -17,7 +17,7 @@
 	$application = getApplication( $dbConnect, $applID );
 	if( !$application )
 	{
-		if($applID)
+		if($applID || !getApplicantCount($dbConnect, $actUser['id']) )
 		{
 			$jobID = null;
 			$job = null;

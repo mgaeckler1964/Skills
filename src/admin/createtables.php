@@ -203,15 +203,17 @@
 					"department		varchar(128)	not null," .
 					"position		int				not null," .
 					"visible		int				not null," .
-					"open_date		int," .
-					"close_date		int," .
+					"status			int				not null," .
+					"max_applicants	int				not null," .
+					"open_date		int				not null," .
+					"close_date		int				not null," .
 					"description	varchar(1024)" .
 				")";
 				
 				$result = queryDatabase( $dbConnect, $query );
 				if( !$result )
 				{
-					echo "<p>company konnte nicht erstellt werden.</p>\n";
+					echo "<p>jobs konnte nicht erstellt werden.</p>\n";
 				}
 // -------------------------------------------------------------------------------------------
 /*

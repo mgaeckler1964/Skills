@@ -149,7 +149,20 @@
 	{
 		return date( "Y-m-d", $timestamp )."T".date( "H:i", $timestamp );
 	}
-	
+
+	function getRelativeTime( $timePoint )
+	{
+		$relative = abs($timePoint-time());
+		if($relative > 86400)							// one day
+			return round($relative/86400) . " Tag(e)";
+		else if($relative > 3600)						// one hour
+			return round($relative/3600) . " Stunde(n)";
+		else if($relative > 60)							// one minute
+			return round($relative/60) . " Minute(n)";
+		else
+			return $relative . " Sekunde(n)";
+	} 	
+
 	// ----------------------------------------------------------------------------------------------------------------------
 	// formControls
 	// ----------------------------------------------------------------------------------------------------------------------
