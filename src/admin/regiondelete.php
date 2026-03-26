@@ -1,5 +1,7 @@
-<?php require_once( "includes/components/login.php" ); ?>
 <?php
+	require_once( "includes/components/login.php" );
+	include_once( "../includes/tools/tools.php" ); 
+
 	$id = $_GET["id"];
 	if( array_key_exists( "nextURL", $_GET ) )
 		$nextURL = $_GET["nextURL"];

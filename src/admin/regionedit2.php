@@ -2,6 +2,7 @@
 	include_once( "../includes/tools/commontools.php" ); 
 	startSession();
 	require_once( "includes/components/login.php" ); 
+	include_once( "../includes/tools/tools.php" ); 
 
 	$id = $_POST["id"];
 	$country = strtoupper($_POST["country"]);

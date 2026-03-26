@@ -2,6 +2,7 @@
 	include_once( "../includes/tools/commontools.php" ); 
 	startSession();
 	require_once( "includes/components/login.php" );
+	include_once( "../includes/tools/tools.php" ); 
 
 	if( array_key_exists( "id", $_GET ) )
 		$id = $_GET["id"];
