@@ -53,14 +53,14 @@
 		{
 			$queryResult = queryDatabase( 
 				$dbConnect,
-				"select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date, a.id as appl_id, a.appl_date ".
+				"select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date, a.id as appl_id, a.appl_date, a.score ".
 				"from jobs j ".
 				"join company c on j.company_id = c.id " .
 				"join application a on a.job_id = j.id " .
 				"where upper(j.job_title) like upper($1) ".
 				"and a.user_id = $2 ".
 				"and upper(c.name) like upper($3) ".
-				"order by c.name, j.job_title",
+				"order by c.name, j.job_title, a.score desc",
 				array( urlencode($jobTitle)."%", $actUser['id'], urlencode($jobCompany)."%" )
 			);
 		}
@@ -68,14 +68,14 @@
 		{
 			$queryResult = queryDatabase( 
 				$dbConnect,
-				"select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date, a.id as appl_id, a.appl_date, a.user_id, u.nachname as appl_name ".
+				"select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date, a.id as appl_id, a.appl_date, a.user_id, u.nachname as appl_name, a.score ".
 				"from jobs j ".
 				"join company c on j.company_id = c.id " .
 				"join application a on a.job_id = j.id " .
 				"join user_tab u on a.user_id = u.id " .
 				"where upper(j.job_title) like upper($1) ".
 				"and j.company_id = $2  ".
-				"order by j.job_title, u.nachname",
+				"order by j.job_title, a.score desc, u.nachname",
 				array( urlencode($jobTitle)."%", $actUser['id'] )
 			);
 		}
@@ -138,7 +138,7 @@
 								formatTimeStamp($job['appl_date']) .
 							"</a></td>" .
 							"<td>".
-								 calculateScore( $dbConnect, $job['id'], $actUser['id'] ) .
+								 reCalculateScore( $dbConnect, $job['id'], $actUser['id'], $job['appl_id'], $job['score'] ) .
 							"</td>";
 					}
 					else if( $mode == REC_APPL_MODE )
@@ -150,7 +150,7 @@
 							"</td><td>" .
 								formatTimeStamp($job['appl_date']) .
 							"</td><td>" ,
-								calculateScore( $dbConnect, $job['id'], $job['user_id'] ) .
+								 reCalculateScore( $dbConnect, $job['id'], $job['user_id'], $job['appl_id'], $job['score'] ) .
 							"</td>";
 					}
 					echo "</tr>\n";

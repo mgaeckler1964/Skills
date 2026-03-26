@@ -1037,6 +1037,21 @@ $applMotInfo = array(
 		return $score;
 	}
 
+	function reCalculateScore( $dbConnect, $jobID, $userID, $applID, $oldScore )
+	{
+		$newScore = calculateScore( $dbConnect, $jobID, $userID );
+		if( $newScore != $oldScore )
+		{
+			queryDatabase( $dbConnect,
+				"update application set score=$2 where id = $1", 
+				array( 
+					$applID, $newScore
+				)
+			);
+		}
+		return $newScore;
+	}
+
 // ==========================================================================================================================
 // Documents
 // ==========================================================================================================================

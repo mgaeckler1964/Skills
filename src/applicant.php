@@ -4,16 +4,15 @@
 	include_once( "includes/components/login.php" ); 
 	include_once( "includes/tools/tools.php" ); 
 
+	$appl_id = checkField( $_GET, "appl_id", null );
 	if( array_key_exists("id", $_GET ) ) {
 		unset($_SESSION['applicant']);
-		$appl_id = checkField( $_GET, "appl_id", null );
 
 		$id = $_GET['id'];
 		$readOnly = true;
 		$theUser = getUser( $dbConnect, $id );
 		$title = "Bewerberprofil";
 	} else {
-		$appl_id = checkField( $_GET, "appl_id", null );
 		$readOnly = false;
 		$id = $actUser['id'];
 		$theUser = $actUser;
@@ -52,7 +51,7 @@
 
 			$nachname = $theUser['nachname'];
 			$vorname = $theUser['vorname'];
-			$email = $theUser['email'];
+			$email = htmlspecialchars($theUser['email'], ENT_QUOTES, 'ISO-8859-1');
 
 			$applicant = getSessionApplicant( $dbConnect, $id, $appl_id );
 
@@ -94,7 +93,7 @@
 							echo("<i>Verwenden Sie Autokenneichen z.B. A-L oder D-M</i>");
 					?>
 				</td></tr>
-				<tr><td class="fieldLabel">E-Mail</td><td><?php echo htmlspecialchars($email, ENT_QUOTES, 'ISO-8859-1'); ?></td></tr>
+				<tr><td class="fieldLabel">E-Mail</td><td><a href="mailto:<?php echo $email; ?>"><?php echo $email; ?></a></td></tr>
 				<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
 
 				<tr>

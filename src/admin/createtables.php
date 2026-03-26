@@ -248,9 +248,11 @@
 */
 				$query = "create table application (".
 					"id				int		not null 	primary key,".
-					"user_id		int		not null," .
-					"job_id			int		not null," .
-					"appl_date		int		not null" .
+					"user_id		int		not null,".
+					"job_id			int		not null,".
+					"appl_date		int		not null,".
+					"score			real	not null,".
+					"status			int		not null" .
 				")";
 				
 				$result = queryDatabase( $dbConnect, $query );

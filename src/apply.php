@@ -28,6 +28,7 @@
 		$jobID = null;
 		$job = null;
 	}
+	$score = $jobID ? calculateScore($dbConnect, $jobID, $actUser['id']) : 0;
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Strict//EN">
@@ -99,6 +100,10 @@
 							<td><?php echo formatTimeStamp($application['appl_date']); ?></td>
 						</tr>
 					<?php } ?>
+					<tr>
+						<td class="fieldLabel">Score</td>
+						<td><?php echo $score; ?></td>
+					</tr>
 
 					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>

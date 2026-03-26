@@ -64,26 +64,32 @@
 	
 	if( $jobID>0 )
 	{
+		$score = calculateScore($dbConnect, $jobID, $actUser['id']);
 		if( !$id )
 		{
 			$id = getNextID( $dbConnect, "application", "id" );
 	
 			$result = queryDatabase( $dbConnect,
 				"insert into application (" .
-					"id, job_id, user_id, appl_date " .
+					"id, job_id, user_id, appl_date, score, status " .
 				")" .
 				"values" .
 				"(" .
-					"$1, $2, $3, $4" .
+					"$1, $2, $3, $4, $5, 0" .
 				")",
 				array( 
-					$id, $jobID, $actUser['id'], time()
+					$id, $jobID, $actUser['id'], time(), $score
 				)
 			);
 		}
 		else
 		{
-			$result = true;
+			$result = queryDatabase( $dbConnect,
+				"update application set score=$2 where id = $1", 
+				array( 
+					$id, $score
+				)
+			);
 		}
 	
 		if($func == CANCEL_FUNC)
