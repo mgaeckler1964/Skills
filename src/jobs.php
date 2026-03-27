@@ -12,6 +12,9 @@
 	$jobTitle = readRequestSetting( "jobTitle", "jobTitle", $_POST, null );
 	$jobCompany = readRequestSetting( "jobCompany", "jobCompany", $_POST, null );
 
+	$jobCountry = readRequestSetting( "jobCountry", "jobCountry", $_POST, null );
+	$jobRegSym = readRequestSetting( "jobRegSym", "jobRegSym", $_POST, null );
+
 	$page=0;
 ?>
 
@@ -36,6 +39,8 @@
 			var page = <?php echo $page; ?>;
 			var jobTitle = "<?php echo $jobTitle; ?>";
 			var jobCompany = "<?php echo $jobCompany; ?>";
+			var jobCountry = "<?php echo $jobCountry; ?>";
+			var jobRegSym = "<?php echo $jobRegSym; ?>";
 			
 			function showPage()
 			{
@@ -56,7 +61,8 @@
 						document.getElementById("searchResult").innerHTML=xmlhttp.responseText;
 					}
 				}
-				xmlhttp.open("GET","jobs2.php?page="+page+"&jobTitle="+jobTitle+"&jobCompany="+jobCompany,true);  
+				xmlhttp.open("GET","jobs2.php?page="+page+"&jobTitle="+jobTitle+"&jobCompany="+jobCompany+"&jobCountry="+jobCountry+"&jobRegSym="+jobRegSym,true);  
+
 				xmlhttp.send();
 			}
 			function prevPage()
@@ -79,10 +85,21 @@
 
 		<form name="searchForm" action="jobs.php" method="post">
 			<table>
-				<tr><td class="fieldLabel">Jobbezeichnung</td><td><input type="text" name="jobTitle" value="<?php if( isset( $jobTitle ) ) echo $jobTitle; ?>"></td></tr>
+				<tr><td class="fieldLabel">Jobbezeichnung</td><td><input type="text" name="jobTitle" size=32 value="<?php if( isset( $jobTitle ) ) echo $jobTitle; ?>"></td></tr>
 
 				<?php if( !$hideCompany ) { ?>
-					<tr><td class="fieldLabel">Firma</td><td><input type="text" name="jobCompany" value="<?php if( isset( $jobCompany ) ) echo $jobCompany; ?>"></td></tr>
+					<tr><td class="fieldLabel">Firma</td><td><input type="text" name="jobCompany" size=32 value="<?php if( isset( $jobCompany ) ) echo $jobCompany; ?>"></td></tr>
+				<?php } ?>
+
+				<?php if($mode == BROWSE_MODE) { ?>
+					<tr>
+						<td class="fieldLabel">Region</td>
+						<td>
+							<input type="text" name="jobCountry" size=3 maxLength=3 value="<?php if( isset( $jobCountry ) ) echo $jobCountry; ?>"> - 
+							<input type="text" name="jobRegSym"  size=3 maxLength=3 value="<?php if( isset( $jobRegSym ) ) echo $jobRegSym; ?>">
+							<i>Verwenden Sie Autokennzeichen z.B. A-L oder D-M</i>
+						</td>
+					</tr>
 				<?php } ?>
 
 				<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>

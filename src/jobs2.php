@@ -22,6 +22,12 @@
 	if( !isset( $jobCompany ) )
 		$jobCompany = checkField( $_GET, "jobCompany", null );
 
+	if( !isset( $jobCountry ) )
+		$jobCountry = readRequestSetting( "jobCountry", "jobCountry", $_POST, null );
+
+	if( !isset( $jobRegSym ) )
+		$jobRegSym = readRequestSetting( "jobRegSym", "jobRegSym", $_POST, null );
+
 	if( !isset($mode))
 		$mode = checkField( $_SESSION, "jobsMode", BROWSE_MODE );
 
@@ -81,16 +87,25 @@
 		}
 		else
 		{
+			$jc = $jobCountry ? urlencode($jobCountry) : "%";
+			$sym = $jobRegSym ? urlencode($jobRegSym)  : "%";
 			$queryResult = queryDatabase( 
 				$dbConnect,
 				"select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date ".
 				"from jobs j ".
 				"join company c on j.company_id = c.id " .
+				"join regions r on c.region = r.id " .
 				"where upper(j.job_title) like upper($1) ".
 				"and upper(c.name) like upper($2) ".
 				"and (j.visible > 0 or j.open_date < $3) ".
+				"and r.country like upper($4) " .
+				"and r.symbol like upper($5) " .
 				"order by c.name, j.job_title",
-				array( urlencode($jobTitle)."%", urlencode($jobCompany)."%", time() )
+				array( 
+					urlencode($jobTitle)."%", urlencode($jobCompany)."%", 
+					time(), 
+					$jc, $sym
+				)
 			);
 		}
 		

@@ -90,7 +90,7 @@
 						echo " - ";
 						createField( "symbol", "text", $symbol, $readOnly, true, false, 3, 3 ); 
 						if( !$readOnly )
-							echo("<i>Verwenden Sie Autokenneichen z.B. A-L oder D-M</i>");
+							echo("<i>Verwenden Sie Autokennzeichen z.B. A-L oder D-M</i>");
 					?>
 				</td></tr>
 				<tr><td class="fieldLabel">E-Mail</td><td><a href="mailto:<?php echo $email; ?>"><?php echo $email; ?></a></td></tr>
