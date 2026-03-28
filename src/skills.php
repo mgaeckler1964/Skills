@@ -23,6 +23,16 @@
 			$title = APPLICATION_NAME;
 			include_once( "includes/components/defhead.php" );
 		?>
+		<script>
+			function selectSkill(id, name)
+			{
+				if( window.opener )
+				{
+					window.opener.selectSkill( id, name );
+				}
+				close();
+			}
+		</script>
 	</head>
 	<body>
 		<?php
@@ -83,7 +93,7 @@
 					$url = 'skills.php?id=' . $subId;
 					if( isset( $func ) )
 						$url = $url . "&func=" . $func;
-						
+
 					echo "<a href='{$url}'>". htmlspecialchars(urldecode($name), ENT_QUOTES, 'ISO-8859-1') ."</a>";
 					echo "</td>";
 					if( isset($actUser) && $actUser['administrator'] )
@@ -103,7 +113,16 @@
 					}
 					else
 					{
-						echo("<td><a href='selectSkill.php?id={$subId}&func={$func}'>Ausw&auml;hlen</a></td>");
+						$onClick = "";
+						$url = "selectSkill.php?id=".$subId."&func=".$func;
+						if( $func == SEARCH_JOB_SKILL_FUNC )
+						{
+							$jsName = htmlspecialchars( urldecode($name), ENT_QUOTES, 'ISO-8859-1');
+							$url = '#';
+							$onClick=" onClick=\"selectSkill( {$subId}, '{$jsName}' );\" ";
+						}
+
+						echo "<td><a href='{$url}' {$onClick}>Ausw&auml;hlen</a></td>";
 					}
 	
 					echo "</tr>\n";

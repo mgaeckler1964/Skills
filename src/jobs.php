@@ -15,6 +15,9 @@
 	$jobCountry = readRequestSetting( "jobCountry", "jobCountry", $_POST, null );
 	$jobRegSym = readRequestSetting( "jobRegSym", "jobRegSym", $_POST, null );
 
+	$skillID = readRequestSetting( "skillID", "jobSkillID", $_POST, null );
+	$skillName = readRequestSetting( "skillName", "jobSkillName", $_POST, null );
+
 	$page=0;
 ?>
 
@@ -41,6 +44,8 @@
 			var jobCompany = "<?php echo $jobCompany; ?>";
 			var jobCountry = "<?php echo $jobCountry; ?>";
 			var jobRegSym = "<?php echo $jobRegSym; ?>";
+			var skillID = "<?php echo $skillID; ?>";
+			var skillName = "<?php echo $skillName; ?>";
 			
 			function showPage()
 			{
@@ -61,7 +66,7 @@
 						document.getElementById("searchResult").innerHTML=xmlhttp.responseText;
 					}
 				}
-				xmlhttp.open("GET","jobs2.php?page="+page+"&jobTitle="+jobTitle+"&jobCompany="+jobCompany+"&jobCountry="+jobCountry+"&jobRegSym="+jobRegSym,true);  
+				xmlhttp.open("GET","jobs2.php?page="+page+"&jobTitle="+jobTitle+"&jobCompany="+jobCompany+"&jobCountry="+jobCountry+"&jobRegSym="+jobRegSym+"&skillID="+skillID+"&skillName="+skillName,true);  
 
 				xmlhttp.send();
 			}
@@ -77,6 +82,15 @@
 			{
 				page++;
 				showPage();
+			}
+			function doSelectSkill()
+			{
+				window.open("skills.php?func=<?php echo SEARCH_JOB_SKILL_FUNC; ?>");
+			}
+			function selectSkill(id, name)
+			{
+				document.getElementById("skillID").value = id;
+				document.getElementById("skillName").value = name;
 			}
 		</script>
 	</head>
@@ -98,6 +112,16 @@
 							<input type="text" name="jobCountry" size=3 maxLength=3 value="<?php if( isset( $jobCountry ) ) echo $jobCountry; ?>"> - 
 							<input type="text" name="jobRegSym"  size=3 maxLength=3 value="<?php if( isset( $jobRegSym ) ) echo $jobRegSym; ?>">
 							<i>Verwenden Sie Autokennzeichen z.B. A-L oder D-M</i>
+						</td>
+					</tr>
+
+					<tr>
+						<td class="fieldLabel">Skills</td>
+						<td>
+							<input type="hidden" name="skillID" id="skillID" value="<?php if( isset( $skillID ) ) echo $skillID; ?>">
+							<input type="text" name="skillName" readonly id="skillName" value="<?php if( isset( $skillName ) ) echo $skillName; ?>">
+							<a href="#" onClick="doSelectSkill();">Ausw&auml;hlen...</a>
+							<a href="#" onClick="selectSkill('','');">Entfernen</a>
 						</td>
 					</tr>
 				<?php } ?>

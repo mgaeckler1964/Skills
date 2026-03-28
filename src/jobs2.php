@@ -23,10 +23,16 @@
 		$jobCompany = checkField( $_GET, "jobCompany", null );
 
 	if( !isset( $jobCountry ) )
-		$jobCountry = readRequestSetting( "jobCountry", "jobCountry", $_POST, null );
+		$jobCountry = readRequestSetting( "jobCountry", "jobCountry", $_GET, null );
 
 	if( !isset( $jobRegSym ) )
-		$jobRegSym = readRequestSetting( "jobRegSym", "jobRegSym", $_POST, null );
+		$jobRegSym = readRequestSetting( "jobRegSym", "jobRegSym", $_GET, null );
+
+	if( !isset( $skillID ) )
+		$skillID = readRequestSetting( "skillID", "jobSkillID", $_GET, null );
+
+	if( !isset( $skillName ) )
+		$skillName = readRequestSetting( "skillName", "jobSkillName", $_GET, null );
 
 	if( !isset($mode))
 		$mode = checkField( $_SESSION, "jobsMode", BROWSE_MODE );
@@ -87,25 +93,54 @@
 		}
 		else
 		{
-			$jc = $jobCountry ? urlencode($jobCountry) : "%";
-			$sym = $jobRegSym ? urlencode($jobRegSym)  : "%";
+			$select = "select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date ".
+				"from jobs j ".
+				"join company c on j.company_id = c.id ";
+				
+			$params = array();
+			$where = "(j.visible > 0 or j.open_date < $1)";
+			$params[] = time();
+			$i = 2;
+			
+			if( $jobTitle )
+			{
+				$where = $where . " and upper(j.job_title) like upper($".$i.")";
+				$params[] = urlencode($jobTitle)."%";
+				$i++;
+			}
+			if( $jobCompany )
+			{
+				$where = $where . " and upper(c.name) like upper($".$i.")";
+				$params[] = urlencode($jobCompany)."%";
+				$i++;
+			}
+			if($jobCountry || $jobRegSym)
+			{
+				$select = $select . " join regions r on c.region = r.id ";
+				$jc = $jobCountry ? urlencode($jobCountry) : "%";
+				$sym = $jobRegSym ? urlencode($jobRegSym)  : "%";
+			
+				$where = $where . " and r.country like upper($".$i.")";
+				$params[] = $jc;
+				$i++;
+
+				$where = $where . " and r.symbol like upper($".$i.")";
+				$params[] = $sym;
+				$i++;
+			}
+			if( $skillID )
+			{
+				$select = $select . " join job_skills s on j.id = s.job_id ";
+				$where = $where . " and s.skill_id =$".$i;
+				$params[] = $skillID;
+				$i++;
+			}
+
 			$queryResult = queryDatabase( 
 				$dbConnect,
-				"select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date ".
-				"from jobs j ".
-				"join company c on j.company_id = c.id " .
-				"join regions r on c.region = r.id " .
-				"where upper(j.job_title) like upper($1) ".
-				"and upper(c.name) like upper($2) ".
-				"and (j.visible > 0 or j.open_date < $3) ".
-				"and r.country like upper($4) " .
-				"and r.symbol like upper($5) " .
-				"order by c.name, j.job_title",
-				array( 
-					urlencode($jobTitle)."%", urlencode($jobCompany)."%", 
-					time(), 
-					$jc, $sym
-				)
+				$select . " where " . $where .
+				" order by c.name, j.job_title",
+				$params
 			);
 		}
 		

@@ -651,6 +651,7 @@ $applMotInfo = array(
 	define( "ADD_JOB_SKILL_FUNC", "addJobSkill" );
 	define( "DEL_SKILL_FUNC", "deleteSkill" );
 	define( "CANCEL_FUNC", "cancel" );
+	define( "SEARCH_JOB_SKILL_FUNC", "searchJobSkill" );
 
 // ==========================================================================================================================
 // company
