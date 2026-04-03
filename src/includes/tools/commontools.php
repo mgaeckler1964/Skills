@@ -546,7 +546,21 @@
 
 		return $userTab;
 	}
-	function deleteUser( $theUserID )
+	function deleteUser2( $dbConnect, $theUserID )
+	{
+		$queryResult = queryDatabase( $dbConnect, "delete from group_member where groupId = $1 or member = $2", array( $theUserID, $theUserID ) );
+		if( dbOK($queryResult) )
+			$queryResult = queryDatabase( $dbConnect, "delete from user_login_prot where userid = $1", array( $theUserID ) );
+		if( dbOK($queryResult) )
+			$queryResult = queryDatabase( $dbConnect, "delete from user_tab where id = $1", array( $theUserID ) );
+		if( !dbOK($queryResult) )
+			$error = $queryResult;
+		else
+			$error = null;
+
+		return $error;
+	} 
+	function deleteUser( $theUserID )	// from admin UI
 	{
 		global $dbConnect, $actUser;
 
@@ -558,17 +572,19 @@
 		else if( $theUserID == $actUser['id'] )
 			$error = new errorClass( "Permission denied", "Cannot delete yourself" );
 		else
-		{
-			$queryResult = queryDatabase( $dbConnect, "delete from group_member where groupId = $1 or member = $2", array( $theUserID, $theUserID ) );
-			if( dbOK($queryResult) )
-				$queryResult = queryDatabase( $dbConnect, "delete from user_login_prot where userid = $1", array( $theUserID ) );
-			if( dbOK($queryResult) )
-				$queryResult = queryDatabase( $dbConnect, "delete from user_tab where id = $1", array( $theUserID ) );
-			
-			if( !dbOK($queryResult) )
-				$error = $queryResult;
-		}
+			$error = deleteUser2( $dbConnect, $theUserID );
 
+		return $error;
+	} 
+
+	function deleteSelf()			// from self delete
+	{
+		global $dbConnect, $actUser;
+
+		if( $actUser['administrator'] || $actUser['guest'] )
+			$error = new errorClass( "Permission denied" );
+
+		$error = deleteUser2( $dbConnect, $actUser['id'] );
 		return $error;
 	} 
 

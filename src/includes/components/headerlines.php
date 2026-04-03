@@ -10,6 +10,8 @@
 			array( "href" => "applicant.php", "label" => "Bewerber" ),
 			array( "href" => "jobs.php?mode=".SENT_APPL_MODE, "label" => "Meine Bewerbungen" ),
 			array( "label" => "-" ),
+			array( "href" => "selfdelete.html", "label" => "Löschen" ),
+			array( "label" => "-" ),
 			array( "href" => "company.php", "label" => "Firma" ),
 			array( "href" => "jobs.php?mode=".EDIT_MODE, "label" => "Jobs" ),
 			array( "href" => "jobs.php?mode=".REC_APPL_MODE, "label" => "Meine Bewerber:innen" )
