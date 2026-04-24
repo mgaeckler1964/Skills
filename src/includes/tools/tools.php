@@ -969,12 +969,11 @@ $applMotInfo = array(
 		return null;
 	}
 
-	function calculateScore( $dbConnect, $jobID, $userID )
+	function calculateXScore( $dbConnect, $jobID, $userID )
 	{
 		// find all skills and requirements
 		$userSkills = getApplicantSkills( $dbConnect, $userID, false );
 		$jobSkills = getJobSkills( $dbConnect, $jobID, false );
-		
 
 		// find the match
 		$match = array();
@@ -1020,6 +1019,8 @@ $applMotInfo = array(
 		$score = 0;
 		$thisYear = date('Y');
 		$weightFactor = 1;
+		$weight = array();
+		
 		foreach( $match as $skill )
 		{
 			$start_y = $skill['start_y'];
@@ -1032,10 +1033,24 @@ $applMotInfo = array(
 				$usageFactor = $end_y - $start_y;
 				$thisWeight = ($skill['part']*100/$maxWeight) * $usageFactor * $pastFactor * $weightFactor;
 				$score += $thisWeight;
+				$weight[$skill['skill_id']] = $thisWeight;
 			}
 		}
 
-		return $score;
+		$result = array();
+		$result['score'] = $score;
+		$result['match'] = $match;
+		$result['weight'] = $weight;
+		$result['userSkills'] = $userSkills;
+		$result['jobSkills'] = $jobSkills;
+
+		return $result;
+	}
+
+	function calculateScore( $dbConnect, $jobID, $userID )
+	{
+		$xScrore = calculateXScore( $dbConnect, $jobID, $userID );
+		return $xScrore['score'];
 	}
 
 	function reCalculateScore( $dbConnect, $jobID, $userID, $applID, $oldScore )
