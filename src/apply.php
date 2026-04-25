@@ -102,7 +102,7 @@
 					<?php } ?>
 					<tr>
 						<td class="fieldLabel">Score</td>
-						<td><a href="compare.php?id=<?php echo $applID; ?>">&nbsp;<?php echo $score; ?>&nbsp;</a></td>
+						<td><a title="Auswerten" href="compare.php?id=<?php echo $applID; ?>">&nbsp;<?php echo $score; ?>&nbsp;</a></td>
 					</tr>
 
 					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>

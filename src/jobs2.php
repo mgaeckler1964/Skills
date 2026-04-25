@@ -176,7 +176,7 @@
 					if( !$hideCompany )
 						echo( htmlspecialchars($job['company_name'], ENT_QUOTES, 'ISO-8859-1') . "</td><td>" );
 					echo( htmlspecialchars($job['department'], ENT_QUOTES, 'ISO-8859-1') . "</td><td>" );
-					echo "<a href='jobedit.php?id={$job['id']}'>". htmlspecialchars($job['job_title'], ENT_QUOTES, 'ISO-8859-1') ."</a></td>";
+					echo "<a title='Jobbeschreibung' href='jobedit.php?id={$job['id']}'>". htmlspecialchars($job['job_title'], ENT_QUOTES, 'ISO-8859-1') ."</a></td>";
 					echo "<TD>" . formatTimeStamp($job['open_date']) . "</td>";
 					echo "<TD>" . formatTimeStamp($job['close_date']) . "</td>";
 					
@@ -184,7 +184,7 @@
 						echo "<td><a href='deleteJob.php?id={$job['id']}' onClick='if( confirm( \"Wirklich?\" ) ) return true; else return false;'>Löschen</a></td>";
 					else if( $mode == SENT_APPL_MODE )
 					{
-						echo "<td><a href='apply.php?id={$job['id']}&appl_id={$job['appl_id']}'>" .
+						echo "<td><a title='Bewerbungsdetails' href='apply.php?id={$job['id']}&appl_id={$job['appl_id']}'>" .
 								formatTimeStamp($job['appl_date']) .
 							"</a></td>" .
 							"<td>".
@@ -194,7 +194,7 @@
 					else if( $mode == REC_APPL_MODE )
 					{
 						echo "<td>".
-								"<a href='applicant.php?id={$job['user_id']}&appl_id={$job['appl_id']}'>". 
+								"<a title='Bewerbungsdetails' href='applicant.php?id={$job['user_id']}&appl_id={$job['appl_id']}'>". 
 									htmlspecialchars(urldecode($job['appl_name']), ENT_QUOTES, 'ISO-8859-1') .
 								"</a> ".
 							"</td><td>" .

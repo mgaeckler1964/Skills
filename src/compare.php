@@ -71,7 +71,7 @@
 						<?php 
 							echo( "Total: " . $score['score'] );
 							if(isset($otherScore))
-								echo("&nbsp;".$otherScore['score']);
+								echo("&nbsp;vs.&nbsp;".$otherScore['score']);
 							echo("<br>");
 							foreach($job['skills'] as $skill )
 							{
@@ -80,7 +80,7 @@
 								$skill_id = $skill['skill_id'];
 								echo( array_key_exists($skill_id, $score['weight'] ) ? $score['weight'][$skill_id] : 0);
 								if(isset($otherScore)) {
-									echo("&nbsp;");
+									echo("&nbsp;vs.&nbsp;");
 									echo( array_key_exists($skill_id, $otherScore['weight'] ) ? $otherScore['weight'][$skill_id] : 0);
 								}
 								echo("<br>");
