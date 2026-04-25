@@ -942,13 +942,36 @@ $applMotInfo = array(
 		return false;
 	}
 
+	function getApplicants( $dbConnect, $jobID, $orderNum=null )
+	{
+		$applicants = array();
+		$order = 0;
+		$queryResult = queryDatabase(
+			$dbConnect,
+			"select id, job_id, user_id, appl_date, score, status " .
+			"from application ".
+			"where job_id=$1 ".
+			"order by score",
+			array( $jobID )
+		);
+		if( dbOK( $queryResult ) ) {
+			while( $queryRecord = fetchQueryRow( $queryResult ) ) {
+				$order++;
+				if( !$orderNum || $orderNum==$order ) {
+					$applicants[] = $queryRecord;
+				}
+			}
+		}
+		return $applicants;
+	}
+
 	function getApplication( $dbConnect, $id )
 	{
 		global $applCvInfo, $applMotInfo;
 
 		$queryResult = queryDatabase(
 			$dbConnect,
-			"select id, job_id, user_id, appl_date " .
+			"select id, job_id, user_id, appl_date, score, status " .
 			"from application ".
 			"where id=$1",
 			array( $id )

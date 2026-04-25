@@ -11,7 +11,13 @@
 
 	$jobID = $application['job_id'];
 	$job = getJob( $dbConnect, $jobID );
-	
+	if($job['max_applicants']) {
+		$otherApplicant = getApplicants($dbConnect, $jobID, $job['max_applicants']);
+		if(count($otherApplicant)) {
+			$otherApplicant =  current($otherApplicant);
+			$otherScore = calculateXScore($dbConnect, $application['job_id'], $otherApplicant['user_id']);
+		}
+	}
 	$score = calculateXScore($dbConnect, $application['job_id'], $application['user_id']);
 ?>
 
@@ -60,10 +66,26 @@
 					</tr>
 				<?php } ?>
 				<tr>
-					<td class="fieldLabel">Score</td>
+					<td class="fieldLabel">Vergleich</td>
 					<td>
 						<?php 
-							echo( "Total: " . $score['score']."<br>" );
+							echo( "Total: " . $score['score'] );
+							if(isset($otherScore))
+								echo("&nbsp;".$otherScore['score']);
+							echo("<br>");
+							foreach($job['skills'] as $skill )
+							{
+								echo( htmlspecialchars($skill['path'], ENT_QUOTES, 'ISO-8859-1') );
+								echo("&nbsp;");
+								$skill_id = $skill['skill_id'];
+								echo( array_key_exists($skill_id, $score['weight'] ) ? $score['weight'][$skill_id] : 0);
+								if(isset($otherScore)) {
+									echo("&nbsp;");
+									echo( array_key_exists($skill_id, $otherScore['weight'] ) ? $otherScore['weight'][$skill_id] : 0);
+								}
+								echo("<br>");
+							}
+/*
 							foreach($score['match'] as $skill )
 							{
 								$dbSkill = getSkill($dbConnect, $skill['skill_id']);
@@ -72,6 +94,16 @@
 								echo($score['weight'][$skill['skill_id']]);
 								echo("<br>");
 							}
+*/
+							if(isset($otherScore)) {
+								if( $otherScore['score'] > $score['score'] )
+									echo("<br><b>Sie haben nicht genug Punkte.</b>");
+								else
+									echo("<br><b>Bis jetzt, haben Sie ausreichend Punkte.</b>");
+							}
+							else
+								echo("<br><b>M&ouml;gliherweise haben Sie genug Punkte.</b>");
+							
 						?>
 					</td>
 				</tr>
