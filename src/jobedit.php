@@ -246,6 +246,15 @@
 							<?php } ?>
 						</td>
 					</tr>
+					<?php if( !isset( $readOnly ) && $hasApplicants ) { ?>
+						<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
+						<tr>
+							<td class="fieldLabel">&nbsp;</td>
+							<td>
+								<a href="jobs.php?jobID=<?php echo $id; ?>">Bewerber</a>
+							</td>
+						</tr>
+					<?php } ?>
 				</table>
 			</form><br>
 		<?php } else {

@@ -3,21 +3,27 @@
 	include_once( "includes/tools/tools.php" ); 
 	startSession();
 
-	$mode = readRequestSetting( "mode", "jobsMode", $_GET, BROWSE_MODE );
+	$jobID = checkField( $_GET, "jobID", 0, true );
+	$mode = $jobID ? REC_APPL_MODE : readRequestSetting( "mode", "jobsMode", $_GET, BROWSE_MODE );
 
 	if($mode == BROWSE_MODE)
 		$tryLogin = true;
 	require_once( "includes/components/login.php" ); 
 
-	$jobTitle = readRequestSetting( "jobTitle", "jobTitle", $_POST, null );
-	$jobCompany = readRequestSetting( "jobCompany", "jobCompany", $_POST, null );
-
-	$jobCountry = readRequestSetting( "jobCountry", "jobCountry", $_POST, null );
-	$jobRegSym = readRequestSetting( "jobRegSym", "jobRegSym", $_POST, null );
-
-	$skillID = readRequestSetting( "skillID", "jobSkillID", $_POST, null );
-	$skillName = readRequestSetting( "skillName", "jobSkillName", $_POST, null );
-
+	if($jobID) {
+		$job = getJob( $dbConnect, $jobID );
+		$jobTitle = $job['job_title'];
+	}
+	else {
+		$jobTitle = readRequestSetting( "jobTitle", "jobTitle", $_POST, null );
+		$jobCompany = readRequestSetting( "jobCompany", "jobCompany", $_POST, null );
+	
+		$jobCountry = readRequestSetting( "jobCountry", "jobCountry", $_POST, null );
+		$jobRegSym = readRequestSetting( "jobRegSym", "jobRegSym", $_POST, null );
+	
+		$skillID = readRequestSetting( "skillID", "jobSkillID", $_POST, null, true );
+		$skillName = readRequestSetting( "skillName", "jobSkillName", $_POST, null );
+	}
 	$page=0;
 ?>
 
@@ -26,7 +32,9 @@
 <html>
 	<head>
 		<?php
-			if( $mode == REC_APPL_MODE )
+			if ( $jobID )
+				$title = "Bewerbunger f&uuml;r ".$jobTitle;
+			else if( $mode == REC_APPL_MODE )
 				$title = "Empfangene Bewerbungen";
 			else if( $mode == SENT_APPL_MODE )
 				$title = "Gesendete Bewerbungen";
@@ -40,6 +48,7 @@
 
 		<script language="JavaScript">
 			var page = <?php echo $page; ?>;
+			var jobID = "<?php echo $jobID; ?>";
 			var jobTitle = "<?php echo $jobTitle; ?>";
 			var jobCompany = "<?php echo $jobCompany; ?>";
 			var jobCountry = "<?php echo $jobCountry; ?>";
@@ -66,7 +75,7 @@
 						document.getElementById("searchResult").innerHTML=xmlhttp.responseText;
 					}
 				}
-				xmlhttp.open("GET","jobs2.php?page="+page+"&jobTitle="+jobTitle+"&jobCompany="+jobCompany+"&jobCountry="+jobCountry+"&jobRegSym="+jobRegSym+"&skillID="+skillID+"&skillName="+skillName,true);  
+				xmlhttp.open("GET","jobs2.php?page="+page+"&jobID="+jobID+"&jobTitle="+jobTitle+"&jobCompany="+jobCompany+"&jobCountry="+jobCountry+"&jobRegSym="+jobRegSym+"&skillID="+skillID+"&skillName="+skillName,true);  
 
 				xmlhttp.send();
 			}
@@ -97,45 +106,46 @@
 	<body class="jobs">
 		<?php include( "includes/components/headerlines.php" ); ?>
 
-		<form name="searchForm" action="jobs.php" method="post">
-			<table>
-				<tr><td class="fieldLabel">Jobbezeichnung</td><td><input type="text" name="jobTitle" size=32 value="<?php if( isset( $jobTitle ) ) echo $jobTitle; ?>"></td></tr>
-
-				<?php if( !$hideCompany ) { ?>
-					<tr><td class="fieldLabel">Firma</td><td><input type="text" name="jobCompany" size=32 value="<?php if( isset( $jobCompany ) ) echo $jobCompany; ?>"></td></tr>
-				<?php } ?>
-
-				<?php if($mode == BROWSE_MODE) { ?>
+		<?php if( $jobID==0 ) { ?>
+			<form name="searchForm" action="jobs.php" method="post">
+				<table>
+					<tr><td class="fieldLabel">Jobbezeichnung</td><td><input type="text" name="jobTitle" size=32 value="<?php if( isset( $jobTitle ) ) echo $jobTitle; ?>"></td></tr>
+	
+					<?php if( !$hideCompany ) { ?>
+						<tr><td class="fieldLabel">Firma</td><td><input type="text" name="jobCompany" size=32 value="<?php if( isset( $jobCompany ) ) echo $jobCompany; ?>"></td></tr>
+					<?php } ?>
+	
+					<?php if($mode == BROWSE_MODE) { ?>
+						<tr>
+							<td class="fieldLabel">Region</td>
+							<td>
+								<input type="text" name="jobCountry" size=3 maxLength=3 value="<?php if( isset( $jobCountry ) ) echo $jobCountry; ?>"> - 
+								<input type="text" name="jobRegSym"  size=3 maxLength=3 value="<?php if( isset( $jobRegSym ) ) echo $jobRegSym; ?>">
+								<i>Verwenden Sie Autokennzeichen z.B. A-L oder D-M</i>
+							</td>
+						</tr>
+	
+						<tr>
+							<td class="fieldLabel">Skills</td>
+							<td>
+								<input type="hidden" name="skillID" id="skillID" value="<?php if( isset( $skillID ) ) echo $skillID; ?>">
+								<input type="text" name="skillName" readonly id="skillName" value="<?php if( isset( $skillName ) ) echo $skillName; ?>">
+								<a href="#" onClick="doSelectSkill();">Ausw&auml;hlen...</a>
+								<a href="#" onClick="selectSkill('','');">Entfernen</a>
+							</td>
+						</tr>
+					<?php } ?>
+	
+					<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
 					<tr>
-						<td class="fieldLabel">Region</td>
+						<td class="fieldLabel"></td>
 						<td>
-							<input type="text" name="jobCountry" size=3 maxLength=3 value="<?php if( isset( $jobCountry ) ) echo $jobCountry; ?>"> - 
-							<input type="text" name="jobRegSym"  size=3 maxLength=3 value="<?php if( isset( $jobRegSym ) ) echo $jobRegSym; ?>">
-							<i>Verwenden Sie Autokennzeichen z.B. A-L oder D-M</i>
+							<input type="submit" value="Suche">
 						</td>
 					</tr>
-
-					<tr>
-						<td class="fieldLabel">Skills</td>
-						<td>
-							<input type="hidden" name="skillID" id="skillID" value="<?php if( isset( $skillID ) ) echo $skillID; ?>">
-							<input type="text" name="skillName" readonly id="skillName" value="<?php if( isset( $skillName ) ) echo $skillName; ?>">
-							<a href="#" onClick="doSelectSkill();">Ausw&auml;hlen...</a>
-							<a href="#" onClick="selectSkill('','');">Entfernen</a>
-						</td>
-					</tr>
-				<?php } ?>
-
-				<tr><td class="fieldLabel">&nbsp;</td><td>&nbsp;</td></tr>
-				<tr>
-					<td class="fieldLabel"></td>
-					<td>
-						<input type="submit" value="Suche">
-					</td>
-				</tr>
-			</table>
-		</form>
-		
+				</table>
+			</form>
+		<?php } ?>
 		<div id="searchResult">
 			<?php include( "jobs2.php" ); ?>
 		</div>
