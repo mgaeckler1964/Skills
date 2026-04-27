@@ -2,6 +2,9 @@
 	if( !array_key_exists("fromLogin", $_POST) )
 		$ignoreCurrent=true;
 	include_once( "includes/components/login.php" ); 
+	session_start();
+	$_SESSION = array();
+	session_destroy();
 ?>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.0 Strict//EN">
