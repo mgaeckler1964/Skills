@@ -9,7 +9,7 @@
 	include_once( "includes/tools/tools.php" ); 
 	clrSessionJob($jobID);
 
-	$id = checkField($_POST, "appl_id", 0);
+	$id = checkField($_POST, "appl_id", 0, true);
 	$func = checkField($_POST, "func", "save");
 
 	$delCV = checkBoolField($_POST, $applCvInfo["uiDeleteName"]);

@@ -4,17 +4,17 @@
 	include_once( "includes/components/login.php" ); 
 	include_once( "includes/tools/tools.php" ); 
 
-	$appl_id = checkField( $_GET, "appl_id", null );
-	if( array_key_exists("id", $_GET ) ) {
+	$appl_id = checkField( $_GET, "appl_id", null, true );
+	$user_id = checkField( $_GET, "id", 0, true );
+	if( $user_id ) {
 		unset($_SESSION['applicant']);
 
-		$id = $_GET['id'];
 		$readOnly = true;
-		$theUser = getUser( $dbConnect, $id );
+		$theUser = getUser( $dbConnect, $user_id );
 		$title = "Bewerberprofil";
 	} else {
 		$readOnly = false;
-		$id = $actUser['id'];
+		$user_id = $actUser['id'];
 		$theUser = $actUser;
 		$title = "Ihr Bewerberprofil";
 	}
@@ -53,7 +53,7 @@
 			$vorname = $theUser['vorname'];
 			$email = htmlspecialchars($theUser['email'], ENT_QUOTES, 'ISO-8859-1');
 
-			$applicant = getSessionApplicant( $dbConnect, $id, $appl_id );
+			$applicant = getSessionApplicant( $dbConnect, $user_id, $appl_id );
 
 			$birthday = $applicant['birthday'];
 			$country = $applicant['country'];

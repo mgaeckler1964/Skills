@@ -13,7 +13,7 @@
 		$job = getJob( $dbConnect, $jobID );
 	}
 	
-	$applID = checkField($_GET, "appl_id", 0);
+	$applID = checkField($_GET, "appl_id", 0, true);
 	$application = getApplication( $dbConnect, $applID );
 	if( !$application )
 	{

@@ -3,9 +3,7 @@
 	startSession();
 	include_once( "includes/components/login.php" ); 
 	include_once( "includes/tools/tools.php" ); 
-	$id = checkField($_GET, "id", 0);
-	if( !is_numeric($id) )
-		$id=0;
+	$id = checkField($_GET, "id", 0, true);
 		
 	$application = getApplication( $dbConnect, $id );
 

@@ -14,7 +14,7 @@
 	include_once( "includes/tools/tools.php" ); 
 
 	if( !isset( $page ) )
-		$page = checkField( $_GET, "page", 0 );
+		$page = checkField( $_GET, "page", 0, true );
 
 	if( !isset( $jobID ) )
 		$jobID = checkField( $_GET, "jobID", 0, true );

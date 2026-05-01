@@ -7,7 +7,7 @@
 	include_once( "includes/tools/database.php" );
 	include_once( "includes/tools/tools.php" );
 
-	$id = readRequestSetting( "id", "lastSkillId", $_GET, -1 );
+	$id = readRequestSetting( "id", "lastSkillId", $_GET, -1, true );
 
 	if( array_key_exists( "func", $_GET ) )
 		$func = $_GET["func"];
