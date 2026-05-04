@@ -33,7 +33,7 @@
 	<head>
 		<?php
 			if ( $jobID )
-				$title = "Bewerbunger f&uuml;r ".$jobTitle;
+				$title = "Bewerber f&uuml;r ".$jobTitle;
 			else if( $mode == REC_APPL_MODE )
 				$title = "Empfangene Bewerbungen";
 			else if( $mode == SENT_APPL_MODE )
@@ -145,6 +145,8 @@
 					</tr>
 				</table>
 			</form>
+		<?php } else { ?>
+			<a href="jobedit.php?id=<?php echo $jobID; ?>">Zur Jobbeschreibung</a>
 		<?php } ?>
 		<div id="searchResult">
 			<?php include( "jobs2.php" ); ?>

@@ -156,6 +156,7 @@
 		
 		if( isset( $queryResult ) && !is_object($queryResult) ) {
 			$i = 0;
+			$lastJobID = 0;
 			echo "<hr><table>\n";
 			echo "<tr><th>Nr.</th>";
 			
@@ -184,10 +185,16 @@
 						echo( "<td>" . htmlspecialchars($job['company_name'], ENT_QUOTES, 'ISO-8859-1') . "</td>" );
 					
 					if( !$jobID ) {
-						echo( "<td>" . htmlspecialchars($job['department'], ENT_QUOTES, 'ISO-8859-1') . "</td>" );
-						echo "<td><a title='Jobbeschreibung' href='jobedit.php?id={$job['id']}'>". htmlspecialchars($job['job_title'], ENT_QUOTES, 'ISO-8859-1') ."</a></td>";
-						echo "<td>" . formatTimeStamp($job['open_date']) . "</td>";
-						echo "<td>" . formatTimeStamp($job['close_date']) . "</td>";
+						$curJobID = $job['id'];
+						if( $lastJobID != $curJobID ) {
+							echo( "<td>" . htmlspecialchars($job['department'], ENT_QUOTES, 'ISO-8859-1') . "</td>" );
+							echo "<td><a title='Jobbeschreibung' href='jobedit.php?id={$curJobID}'>". htmlspecialchars($job['job_title'], ENT_QUOTES, 'ISO-8859-1') ."</a></td>";
+							echo "<td>" . formatTimeStamp($job['open_date']) . "</td>";
+							echo "<td>" . formatTimeStamp($job['close_date']) . "</td>";
+							$lastJobID = $curJobID;
+						}
+						else
+							echo("<td colspan=4>&nbsp;</td>");
 					}
 					
 					if( $mode == EDIT_MODE )
