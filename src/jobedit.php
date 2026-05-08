@@ -42,6 +42,11 @@
 				document.getElementById("fnc").value = "<?php echo CANCEL_FUNC; ?>";
 				document.getElementById("frm").submit();
 			}
+			function copyJob()
+			{
+				document.getElementById("fnc").value = "<?php echo COPY_FUNC; ?>";
+				document.getElementById("frm").submit();
+			}
 		</script>
 	</head>
 	<body class="center">
@@ -227,6 +232,9 @@
 						<td>
 							<?php if( !isset( $readOnly ) ) { ?>
 								<input type="submit" value="Speichern">
+								<?php if( $id) { ?>
+									<input type='button' onClick='copyJob();' value='Neu Speichern'>
+								<?php } ?>
 								<input type='button' onClick='addSkill();' value='SKill'>
 								<input type='button' onClick='cancelEdit();' value='Abbruch'>
 							<?php } else if( $open_date > time() ) { ?>

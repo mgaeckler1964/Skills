@@ -9,8 +9,7 @@
 	$id = $_POST['id'];
 	$sessionJobKey = "job_" . $id;
 
-	if( $_POST['func'] == SAVE_FUNC )
-	{
+	if( $_POST['func'] == SAVE_FUNC ) {
 		$job_title = urlencode($job["job_title"]);
 		$department = urlencode($job["department"]);
 		$position = $job["position"];
@@ -26,8 +25,7 @@
 		
 		if( $open_date < time() )
 			$visible = 1;
-		if( $hasApplicants )
-		{
+		if( $hasApplicants ) {
 			$visible = 1;
 			if( $open_date > time() )
 				$open_date = time();
@@ -38,13 +36,10 @@
 		if( !$company_id )
 			$company_id = $actUser['id'];
 
-		if( $actUser['id'] != $company_id && !$actUser['administrator'] )
-		{
+		if( $actUser['id'] != $company_id && !$actUser['administrator'] ) {
 			$error = "Keine Berechtigung";
 			$result = false;
-		}
-		else if( !$id )
-		{
+		} else if( !$id ) {
 			$id = getNextID( $dbConnect, "jobs", "id" );
 			$result = queryDatabase( $dbConnect,
 				"insert into jobs (" .
@@ -58,9 +53,7 @@
 					$id, $job_title, $position, $description, $visible, 0, $company_id, $open_date, $close_date, $max_applicants, $department
 				)
 			);
-		}
-		else
-		{
+		} else {
 			$result = queryDatabase( $dbConnect,
 				"update jobs " .
 				"set job_title = $3, " .
@@ -81,8 +74,7 @@
 
 		if($job[$jobFileInfo['uiDeleteName']])
 			deleteDocument( $dbConnect, $job[$jobFileInfo['idFieldName']] );
-		if( !is_object( $result ) && array_key_exists($jobFileInfo['uiFieldName'], $job) )
-		{
+		if( !is_object( $result ) && array_key_exists($jobFileInfo['uiFieldName'], $job) ) {
 			saveDocument( 
 				$dbConnect, $actUser['id'], $id, JOB_DESCR, 
 				$job[$jobFileInfo['typeFieldName']], 
@@ -91,17 +83,14 @@
 			);
 		}
 
-		if( !is_object( $result ) )
-		{
+		if( !is_object( $result ) ) {
 			$result = queryDatabase( $dbConnect, 
 				"delete from job_skills where job_id = $1", 
 				array($id)
 			 );
 		}
-		if( !is_object( $result ) )
-		{
-			foreach($job['skills'] as $skill )
-			{
+		if( !is_object( $result ) ) {
+			foreach($job['skills'] as $skill ) {
 				$jsID = getNextID( $dbConnect, "job_skills", "id" );
 				$part = $skill["part"] !== "" ? $skill["part"] : null;
 				$result = queryDatabase( $dbConnect, 
@@ -117,49 +106,41 @@
 		$nextURL = "jobs.php";
 		unset($_SESSION[$sessionJobKey]);
 		unset($_SESSION['job_id']);
-	}
-	else if( $_POST['func'] == ADD_JOB_SKILL_FUNC )
-	{
+	} else if( $_POST['func'] == ADD_JOB_SKILL_FUNC ) {
 		$_SESSION['job_id'] = $id;
 		$nextURL = "skills.php?func=" . ADD_JOB_SKILL_FUNC ;
 		$result = true;
-	}
-	else if( $_POST['func'] == DEL_SKILL_FUNC )
-	{
+	} else if( $_POST['func'] == DEL_SKILL_FUNC ) {
 		$sessionJobKey = "job_" . $id;
 
 		$skill_id = $_POST['skill_id'];
 		$newSkills = array();
-		foreach($job['skills'] as $skill )
-		{
+		foreach($job['skills'] as $skill ) {
 			if( $skill["skill_id"] != $skill_id )
-			{
 				$newSkills[] = $skill;
-			}
 		}
 		$job['skills'] = $newSkills;
 		$_SESSION[$sessionJobKey] = $job;
 		$nextURL = "jobedit.php?id=".$id;
 		$result = true;
-	}
-	else if( $_POST['func'] == CANCEL_FUNC )
-	{
+	} else if( $_POST['func'] == CANCEL_FUNC ) {
 		unset($_SESSION[$sessionJobKey]);
 		unset($_SESSION['job_id']);
 		$nextURL = "jobs.php";
 		$result = true;
+	} else if( $_POST['func'] == COPY_FUNC ) {
+		copySessionJob( $dbConnect, $id );
+		unset($_SESSION[$sessionJobKey]);
+		unset($_SESSION['job_id']);
+		$nextURL = "jobedit.php?id=0";
+		$result = true;
 	}
 
-
-	if( is_object( $result ) )
-	{
+	if( is_object( $result ) ) {
 		$error = $result;
 		$result = false;
-	}
-	else
-	{
+	} else
 		header( "Location: " . $nextURL );
-	}
 
 ?>
 

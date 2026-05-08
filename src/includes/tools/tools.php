@@ -647,6 +647,7 @@ $applMotInfo = array(
 	}
 
 	define( "SAVE_FUNC", "save" );
+	define( "COPY_FUNC", "copy" );
 	define( "ADD_SKILL_FUNC", "addSkill" );
 	define( "ADD_JOB_SKILL_FUNC", "addJobSkill" );
 	define( "DEL_SKILL_FUNC", "deleteSkill" );
@@ -805,6 +806,16 @@ $applMotInfo = array(
 
 
 		return $_SESSION[$sessionJobKey];
+	}
+	function copySessionJob( $dbConnect, $id )
+	{
+		$sessionJobKey = "job_" . $id;
+		$job = array_key_exists( $sessionJobKey, $_SESSION ) ? $_SESSION[$sessionJobKey] : getJob( $dbConnect, $id );
+
+		$sessionJobKey = "job_0";
+		$_SESSION[$sessionJobKey] = $job;
+
+		return $job;
 	}
 
 	function putSessionJob( $request )
