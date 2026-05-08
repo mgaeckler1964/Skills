@@ -6,7 +6,7 @@
 	include_once( "includes/tools/tools.php" ); 
 	$job = putSessionJobFile( putSessionJob( $_POST ), $_POST, $_FILES );
 
-	$id = $_POST['id'];
+	$id = checkField( $_POST, 'id', 0, true );
 	$sessionJobKey = "job_" . $id;
 
 	if( $_POST['func'] == SAVE_FUNC ) {

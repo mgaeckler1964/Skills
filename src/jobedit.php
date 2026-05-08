@@ -14,13 +14,10 @@
 			include_once( "includes/components/defhead.php" );
 
 			$backURL = "jobedit.php";
-			if( array_key_exists( "id", $_GET ) )
-			{
-				$id = $_GET["id"];
+			if( array_key_exists( "id", $_GET ) ) {
+				$id = checkField( $_GET, 'id', 0, true );
 				$backURL = $backURL . "?id=" . $id;
-			}
-			else
-			{
+			} else {
 				$backURL = $backURL . "?id=" . 0;
 			}
 			$_SESSION['backURL'] = $backURL;
@@ -56,12 +53,10 @@
 			$delDoc = false;
 			$hasApplicants = false;
 
-			if( isset($id) )
-			{
+			if( isset($id) ) {
 				$job = getSessionJob( $dbConnect, $id );
 
-				if( $id == 0 || array_key_exists('id', $job ) )
-				{
+				if( $id == 0 || array_key_exists('id', $job ) ) {
 					$job_title = $job['job_title'];
 					$department = $job['department'];
 					$position = $job['position'];
@@ -77,19 +72,13 @@
 					$delDoc = checkBoolField( $job, $jobFileInfo['uiDeleteName'] );
 					$hasApplicants = hasApplicants($dbConnect, $id);
 					if( $hasApplicants || $open_date < time() )
-					{
 						$visible = 1;
-					}
-				}
-				else
+				} else
 					$error = "Jobangebot nicht gefunden";
-			}
-			else if( isset( $actUser ) )
-			{				
+			} else if( isset( $actUser ) ) {				
 				$company = getCompany( $dbConnect, $actUser['id'] );
 
-				if( array_key_exists('id', $company ) && $company['id']>0 )
-				{
+				if( array_key_exists('id', $company ) && $company['id']>0 ) {
 					$job = createEmptyJob();
 					$id = 0;
 					$job_title = "";
@@ -102,9 +91,7 @@
 					$open_date = time();
 					$close_date = time();
 					$max_applicants = 0;
-				}
-				else
-				{
+				} else {
 					$error = "Sie m&uuml;ssen erst Ihre Firma einrichten.";
 					$nextURL = "company.php";
 				}
@@ -164,21 +151,17 @@
 					<tr>
 						<td class="fieldLabel">Anforderungen</td>
 						<td><?php
-							if( isset($job) && array_key_exists('skills', $job ) )
-							{
-								foreach($job['skills'] as $skill )
-								{
+							if( isset($job) && array_key_exists('skills', $job ) ) {
+								foreach($job['skills'] as $skill ) {
 									echo(htmlspecialchars($skill['path'], ENT_QUOTES, 'ISO-8859-1'));
 									if( array_key_exists('part', $skill ) )
 										$part = $skill['part'];
 									else
 										$part = "";
 								
-									if(isset( $readOnly )) {
+									if(isset( $readOnly ))
 										echo " " . $part ."<br>";
-									}
-									else
-									{
+									else {
 										echo( "<br>Anteil: <input name='part{$skill['skill_id']}' type='number' value='".htmlspecialchars($part, ENT_QUOTES, 'ISO-8859-1')."' required>\n" );
 										echo( "<input type='button' onClick=\"deleteSkill('{$skill['skill_id']}');\" value='Del'>" );
 										echo("<HR>\n");
@@ -206,8 +189,7 @@
 						<td>
 							<?php 
 								createDateTime("close_date", $close_date, isset( $readOnly ), false);
-								if( !isset( $readOnly ) )
-								{
+								if( !isset( $readOnly ) ) {
 									if( $close_date < time() )
 										echo (" seit ");
 									else

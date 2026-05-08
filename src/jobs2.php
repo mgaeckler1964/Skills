@@ -197,8 +197,11 @@
 							echo("<td colspan=4>&nbsp;</td>");
 					}
 					
-					if( $mode == EDIT_MODE )
-						echo "<td><a href='deleteJob.php?id={$job['id']}' onClick='if( confirm( \"Wirklich?\" ) ) return true; else return false;'>Löschen</a></td>";
+					if( $mode == EDIT_MODE ) {
+						$hasApplicants = hasApplicants($dbConnect, $job['id']);
+						if( !$hasApplicants )
+							echo "<td><a href='deleteJob.php?id={$job['id']}' onClick='if( confirm( \"Wirklich?\" ) ) return true; else return false;'>Löschen</a></td>";
+					}
 					else if( $mode == SENT_APPL_MODE ) {
 						echo "<td><a title='Bewerbungsdetails' href='apply.php?id={$job['id']}&appl_id={$job['appl_id']}'>" .
 								formatTimeStamp($job['appl_date']) .
