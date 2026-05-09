@@ -13,8 +13,7 @@
 	if($jobID) {
 		$job = getJob( $dbConnect, $jobID );
 		$jobTitle = $job['job_title'];
-	}
-	else {
+	} else {
 		$jobTitle = readRequestSetting( "jobTitle", "jobTitle", $_POST, null );
 		$jobCompany = readRequestSetting( "jobCompany", "jobCompany", $_POST, null );
 	
@@ -56,22 +55,16 @@
 			var skillID = "<?php echo $skillID; ?>";
 			var skillName = "<?php echo $skillName; ?>";
 			
-			function showPage()
-			{
+			function showPage() {
 				var xmlhttp;    
 
-				if (window.XMLHttpRequest)
-				{// code for IE7+, Firefox, Chrome, Opera, Safari
+				if (window.XMLHttpRequest) {// code for IE7+, Firefox, Chrome, Opera, Safari
 					xmlhttp=new XMLHttpRequest();
-				}
-				else
-				{// code for IE6, IE5
+				} else { // code for IE6, IE5
 					xmlhttp=new ActiveXObject("Microsoft.XMLHTTP");
 				}
-				xmlhttp.onreadystatechange=function()
-				{
-					if (xmlhttp.readyState==4 && xmlhttp.status==200)
-					{
+				xmlhttp.onreadystatechange=function() {
+					if (xmlhttp.readyState==4 && xmlhttp.status==200) {
 						document.getElementById("searchResult").innerHTML=xmlhttp.responseText;
 					}
 				}
@@ -79,25 +72,20 @@
 
 				xmlhttp.send();
 			}
-			function prevPage()
-			{
-				if( page > 0 )
-				{
+			function prevPage() {
+				if( page > 0 ) {
 					page--;
 					showPage();
 				}
 			}
-			function nextPage()
-			{
+			function nextPage() {
 				page++;
 				showPage();
 			}
-			function doSelectSkill()
-			{
+			function doSelectSkill() {
 				window.open("skills.php?func=<?php echo SEARCH_JOB_SKILL_FUNC; ?>");
 			}
-			function selectSkill(id, name)
-			{
+			function selectSkill(id, name) {
 				document.getElementById("skillID").value = id;
 				document.getElementById("skillName").value = name;
 			}
@@ -158,4 +146,3 @@
 		<?php include( "includes/components/footerlines.php" ); ?>
 	</body>
 </html>
-			

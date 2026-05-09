@@ -1,6 +1,5 @@
 <?php
-	if( !isset($_SESSION) )
-	{
+	if( !isset($_SESSION) ) {
 		include_once( "includes/tools/commontools.php" ); 
 		startSession();
 	}
@@ -44,8 +43,7 @@
 	
 	$hitsPerPage = isMobileClient() ? 3 : 20;
 
-	if( isset( $jobTitle ) || isset( $jobCompany ) || $jobID != 0)
-	{
+	if( isset( $jobTitle ) || isset( $jobCompany ) || $jobID != 0) {
 		if( !isset( $jobTitle ) )
 			$jobTitle = "";
 		if( !isset( $jobCompany ) )
@@ -64,8 +62,7 @@
 				"order by a.score desc, u.nachname",
 				array( $actUser['id'], $jobID )
 			);
-		}
-		else if( $mode == EDIT_MODE ) {
+		} else if( $mode == EDIT_MODE ) {
 			$queryResult = queryDatabase( 
 				$dbConnect,
 				"select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date ".
@@ -76,8 +73,7 @@
 				"order by j.job_title, j.id",
 				array( urlencode($jobTitle)."%", $actUser['id'] )
 			);
-		}
-		else if( $mode == SENT_APPL_MODE ) {
+		} else if( $mode == SENT_APPL_MODE ) {
 			$queryResult = queryDatabase( 
 				$dbConnect,
 				"select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date, a.id as appl_id, a.appl_date, a.score ".
@@ -90,8 +86,7 @@
 				"order by c.name, j.job_title, a.score desc",
 				array( urlencode($jobTitle)."%", $actUser['id'], urlencode($jobCompany)."%" )
 			);
-		}
-		else if( $mode == REC_APPL_MODE ) {
+		} else if( $mode == REC_APPL_MODE ) {
 			$queryResult = queryDatabase( 
 				$dbConnect,
 				"select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date, a.id as appl_id, a.appl_date, a.user_id, u.nachname as appl_name, a.score ".
@@ -104,15 +99,13 @@
 				"order by j.job_title, a.score desc, u.nachname",
 				array( urlencode($jobTitle)."%", $actUser['id'] )
 			);
-		}
-		else
-		{
+		} else {
 			$select = "select j.id, c.name as company_name, j.job_title, j.department, j.open_date, j.close_date ".
 				"from jobs j ".
 				"join company c on j.company_id = c.id ";
 				
 			$params = array();
-			$where = "(j.visible > 0 or j.open_date < $1)";
+			$where = "(j.visible > 0 or j.open_date < $1) and j.close_date > $1 ";
 			$params[] = time();
 			$i = 2;
 			
@@ -171,8 +164,7 @@
 				echo "<th>Bewerber:in</th>";
 				echo "<th>Bewerbungsdatum</th>";
 				echo "<th>Score</th>";
-			}
-			else if( $mode == SENT_APPL_MODE ) {
+			} else if( $mode == SENT_APPL_MODE ) {
 				echo "<th>Bewerbungsdatum</th>";
 				echo "<th>Score</th>";
 			}
@@ -192,8 +184,7 @@
 							echo "<td>" . formatTimeStamp($job['open_date']) . "</td>";
 							echo "<td>" . formatTimeStamp($job['close_date']) . "</td>";
 							$lastJobID = $curJobID;
-						}
-						else
+						} else
 							echo("<td colspan=4>&nbsp;</td>");
 					}
 					
@@ -201,16 +192,14 @@
 						$hasApplicants = hasApplicants($dbConnect, $job['id']);
 						if( !$hasApplicants )
 							echo "<td><a href='deleteJob.php?id={$job['id']}' onClick='if( confirm( \"Wirklich?\" ) ) return true; else return false;'>Löschen</a></td>";
-					}
-					else if( $mode == SENT_APPL_MODE ) {
+					} else if( $mode == SENT_APPL_MODE ) {
 						echo "<td><a title='Bewerbungsdetails' href='apply.php?id={$job['id']}&appl_id={$job['appl_id']}'>" .
 								formatTimeStamp($job['appl_date']) .
 							"</a></td>" .
 							"<td>".
 								 reCalculateScore( $dbConnect, $job['id'], $actUser['id'], $job['appl_id'], $job['score'] ) .
 							"</td>";
-					}
-					else if( $mode == REC_APPL_MODE ) {
+					} else if( $mode == REC_APPL_MODE ) {
 						echo "<td>".
 								"<a title='Bewerbungsdetails' href='applicant.php?id={$job['user_id']}&appl_id={$job['appl_id']}'>". 
 									htmlspecialchars(urldecode($job['appl_name']), ENT_QUOTES, 'ISO-8859-1') .
